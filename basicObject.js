@@ -28,7 +28,7 @@ var fragmentShaderText =
 var InitDemo = function () {
   console.log('This is working');
 
-  var canvas = document.getElementById('game-surface');
+  var canvas = document.getElementById('environment-canvas');
   var gl = canvas.getContext('webgl');
   if(!gl){
     console.log('WebGL needs experimental');
