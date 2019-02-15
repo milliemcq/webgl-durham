@@ -328,11 +328,12 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   modelMatrix = popMatrix();
 
   // Model the chair back
-  pushMatrix(modelMatrix);
+  /*pushMatrix(modelMatrix);
     modelMatrix.translate(0, 1.25, -0.75);  // Translation
     modelMatrix.scale(2.0, 2.0, 0.5); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
+  */
 }
 
 function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
