@@ -4,6 +4,8 @@ var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' +
   'attribute vec4 a_Color;\n' +
   'attribute vec4 a_Normal;\n' +        // Normal
+  'attribute vec2 a_TexCoord;\n' +
+  'varying vec2 v_TexCoord;\n' +
   'uniform mat4 u_ModelMatrix;\n' +
   'uniform mat4 u_NormalMatrix;\n' +
   'uniform mat4 u_ViewMatrix;\n' +
@@ -13,6 +15,7 @@ var VSHADER_SOURCE =
   'varying vec4 v_Color;\n' +
   'uniform bool u_isLighting;\n' +
   'void main() {\n' +
+  'v_TexCoord = a_TexCoord;\n' +
   '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
   '  if(u_isLighting)\n' + 
   '  {\n' +
@@ -33,8 +36,10 @@ var FSHADER_SOURCE =
   'precision mediump float;\n' +
   '#endif\n' +
   'varying vec4 v_Color;\n' +
+  'varying vec2 fragTexCoord;\n' +
+  'uniform sampler2D sampler;\n' +
   'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
+  '  gl_FragColor = texture2D(u_Sampler, v_texCoord);\n' +
   '}\n';
 
 var modelMatrix = new Matrix4(); // The model matrix
@@ -60,6 +65,13 @@ var main = function () {
   // Initialize shaders
   if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
     console.log('Failed to intialize shaders.');
+    return;
+  }
+
+  var n = initVertexBuffers(gl);
+
+  if (!initTextures(gl, n)) {
+    console.log('Failed to intialize textures.');
     return;
   }
 
@@ -142,12 +154,42 @@ function initVertexBuffers(gl) {
   //  |/      |/
   //  v2------v3
   var vertices = new Float32Array([   // Coordinates
-     0.5, 0.5, 0.5,  -0.5, 0.5, 0.5,  -0.5,-0.5, 0.5,   0.5,-0.5, 0.5, // v0-v1-v2-v3 front
-     0.5, 0.5, 0.5,   0.5,-0.5, 0.5,   0.5,-0.5,-0.5,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
-     0.5, 0.5, 0.5,   0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, 0.5, 0.5, // v0-v5-v6-v1 up
-    -0.5, 0.5, 0.5,  -0.5, 0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
-    -0.5,-0.5,-0.5,   0.5,-0.5,-0.5,   0.5,-0.5, 0.5,  -0.5,-0.5, 0.5, // v7-v4-v3-v2 down
-     0.5,-0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5, 0.5,-0.5,   0.5, 0.5,-0.5  // v4-v7-v6-v5 back
+    //FRONT v0-v1-v2-v3
+    0.5, 0.5, 0.5,   0, 0,
+    -0.5, 0.5, 0.5,  0, 1,
+    -0.5,-0.5, 0.5,  1, 1, 
+    0.5,-0.5, 0.5,   1, 0,
+
+    //RIGHT v0-v3-v4-v5
+    0.5, 0.5, 0.5,   0, 0,
+    0.5,-0.5, 0.5,   0, 1,
+    0.5,-0.5,-0.5,   1, 1,
+    0.5, 0.5,-0.5,   1, 0,
+
+    //TOP v0-v5-v6-v1
+    0.5, 0.5, 0.5,   0, 0,
+    0.5, 0.5,-0.5,   0, 1,
+    -0.5, 0.5,-0.5,  1, 1, 
+    -0.5, 0.5, 0.5,  1, 0
+
+    //LEFT v1-v6-v7-v2
+    -0.5, 0.5, 0.5,  0, 0,
+    -0.5, 0.5,-0.5,  0, 1,
+    -0.5,-0.5,-0.5,  1, 1,
+    -0.5,-0.5, 0.5,  1, 0, 
+
+    //BOTTOM v7-v4-v3-v2
+    -0.5,-0.5,-0.5,  0, 0,  
+    0.5,-0.5,-0.5,   0, 1,
+    0.5,-0.5, 0.5,   1, 1,
+    -0.5,-0.5, 0.5,  1, 0,
+
+
+    //BACK v4-v7-v6-v5 
+    0.5,-0.5,-0.5,   0, 0,
+    -0.5,-0.5,-0.5,  0, 1,
+    -0.5, 0.5,-0.5,  1, 1, 
+    0.5, 0.5,-0.5,   1, 0
   ]);
 
 

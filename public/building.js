@@ -96,6 +96,7 @@ var RunDemo = function (vertexShaderText, fragmentShaderText, SusanImage, SusanM
 	//
 	var susanVertices = SusanModel.meshes[0].vertices;
 	var susanIndices = [].concat.apply([], SusanModel.meshes[0].faces);
+	var susanNormals = SusanModel.meshes[0].normals;
 	//var susanTexCoords = SusanModel.meshes[0].texturecoords[0];
 
 	var susanPosVertexBufferObject = gl.createBuffer();
