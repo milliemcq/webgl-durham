@@ -36,8 +36,8 @@ var FSHADER_SOURCE =
   'precision mediump float;\n' +
   '#endif\n' +
   'varying vec4 v_Color;\n' +
-  'varying vec2 fragTexCoord;\n' +
-  'uniform sampler2D sampler;\n' +
+  'varying vec2 v_texCoord;\n' +
+  'uniform sampler2D u_Sampler;\n' +
   'void main() {\n' +
   '  gl_FragColor = texture2D(u_Sampler, v_texCoord);\n' +
   '}\n';
@@ -223,11 +223,12 @@ function initVertexBuffers(gl) {
     20,21,22,  20,22,23     // back
  ]);
 
-
+ 
   // Write the vertex property to buffers (coordinates, colors and normals)
-  if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT, 0)) return -1;
+  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT, 0)) return -1;
+  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT, 0)) return -1;
+  if (!initArrayBuffer(gl, 'a_TexCoord', vertices, 3, gl.FLOAT, 3)) return -1;
 
   // Write the indices to the buffer object
   var indexBuffer = gl.createBuffer();
@@ -238,11 +239,21 @@ function initVertexBuffers(gl) {
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+  
+
+  var vertexTextCoordBuffer = gl.createBuffer();
+  if(!vertexTextCoordBuffer){
+    console.log("Failed to create the buffer object");
+    return false;
+  }
+
+  gl.bindBuffer(gl.Matrix4)
+
 
   return indices.length;
 }
 
-function initArrayBuffer (gl, attribute, data, num, type) {
+function initArrayBuffer (gl, attribute, data, num, type, offset) {
   // Create a buffer object
   var buffer = gl.createBuffer();
   if (!buffer) {
@@ -258,7 +269,7 @@ function initArrayBuffer (gl, attribute, data, num, type) {
     console.log('Failed to get the storage location of ' + attribute);
     return false;
   }
-  gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
+  gl.vertexAttribPointer(a_attribute, num, type, false, 0, offset);
   // Enable the assignment of the buffer object to the attribute variable
   gl.enableVertexAttribArray(a_attribute);
 
