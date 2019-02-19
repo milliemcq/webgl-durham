@@ -4,8 +4,6 @@ var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' +
   'attribute vec4 a_Color;\n' +
   'attribute vec4 a_Normal;\n' +        // Normal
-  'attribute vec2 a_TexCoord;\n' +
-  'varying vec2 v_TexCoord;\n' +
   'uniform mat4 u_ModelMatrix;\n' +
   'uniform mat4 u_NormalMatrix;\n' +
   'uniform mat4 u_ViewMatrix;\n' +
@@ -15,7 +13,6 @@ var VSHADER_SOURCE =
   'varying vec4 v_Color;\n' +
   'uniform bool u_isLighting;\n' +
   'void main() {\n' +
-  'v_TexCoord = a_TexCoord;\n' +
   '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
   '  if(u_isLighting)\n' + 
   '  {\n' +
@@ -36,10 +33,8 @@ var FSHADER_SOURCE =
   'precision mediump float;\n' +
   '#endif\n' +
   'varying vec4 v_Color;\n' +
-  'varying vec2 v_TexCoord;\n' +
-  'uniform sampler2D u_Sampler;\n' +
   'void main() {\n' +
-  '  gl_FragColor = texture2D(u_Sampler, v_TexCoord);\n' +
+  '  gl_FragColor = v_Color;\n' +
   '}\n';
 
 var modelMatrix = new Matrix4(); // The model matrix
@@ -51,7 +46,7 @@ var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
 
-var main = function () {
+function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
 
@@ -65,13 +60,6 @@ var main = function () {
   // Initialize shaders
   if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
     console.log('Failed to intialize shaders.');
-    return;
-  }
-
-  var n = initVertexBuffers(gl);
-
-  if (!initTextures(gl, n)) {
-    console.log('Failed to intialize textures.');
     return;
   }
 
@@ -154,52 +142,22 @@ function initVertexBuffers(gl) {
   //  |/      |/
   //  v2------v3
   var vertices = new Float32Array([   // Coordinates
-    //FRONT v0-v1-v2-v3
-    0.5, 0.5, 0.5,   0, 0,
-    -0.5, 0.5, 0.5,  0, 1,
-    -0.5,-0.5, 0.5,  1, 1, 
-    0.5,-0.5, 0.5,   1, 0,
-
-    //RIGHT v0-v3-v4-v5
-    0.5, 0.5, 0.5,   0, 0,
-    0.5,-0.5, 0.5,   0, 1,
-    0.5,-0.5,-0.5,   1, 1,
-    0.5, 0.5,-0.5,   1, 0,
-
-    //TOP v0-v5-v6-v1
-    0.5, 0.5, 0.5,   0, 0,
-    0.5, 0.5,-0.5,   0, 1,
-    -0.5, 0.5,-0.5,  1, 1, 
-    -0.5, 0.5, 0.5,  1, 0
-
-    //LEFT v1-v6-v7-v2
-    -0.5, 0.5, 0.5,  0, 0,
-    -0.5, 0.5,-0.5,  0, 1,
-    -0.5,-0.5,-0.5,  1, 1,
-    -0.5,-0.5, 0.5,  1, 0, 
-
-    //BOTTOM v7-v4-v3-v2
-    -0.5,-0.5,-0.5,  0, 0,  
-    0.5,-0.5,-0.5,   0, 1,
-    0.5,-0.5, 0.5,   1, 1,
-    -0.5,-0.5, 0.5,  1, 0,
-
-
-    //BACK v4-v7-v6-v5 
-    0.5,-0.5,-0.5,   0, 0,
-    -0.5,-0.5,-0.5,  0, 1,
-    -0.5, 0.5,-0.5,  1, 1, 
-    0.5, 0.5,-0.5,   1, 0
+     0.5, 0.5, 0.5,  -0.5, 0.5, 0.5,  -0.5,-0.5, 0.5,   0.5,-0.5, 0.5, // v0-v1-v2-v3 front
+     0.5, 0.5, 0.5,   0.5,-0.5, 0.5,   0.5,-0.5,-0.5,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
+     0.5, 0.5, 0.5,   0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, 0.5, 0.5, // v0-v5-v6-v1 up
+    -0.5, 0.5, 0.5,  -0.5, 0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
+    -0.5,-0.5,-0.5,   0.5,-0.5,-0.5,   0.5,-0.5, 0.5,  -0.5,-0.5, 0.5, // v7-v4-v3-v2 down
+     0.5,-0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5, 0.5,-0.5,   0.5, 0.5,-0.5  // v4-v7-v6-v5 back
   ]);
 
 
   var colors = new Float32Array([    // Colors
-    0, 1, 0,   0, 1, 0,   0, 1, 0,  0, 1, 0,     // v0-v1-v2-v3 front
-    0, 1, 0,   0, 1, 0,   0, 1, 0,  0, 1, 0,     // v0-v3-v4-v5 right
-    0, 1, 0,   0, 1, 0,   0, 1, 0,  0, 1, 0,     // v0-v5-v6-v1 up
-    0, 1, 0,   0, 1, 0,   0, 1, 0,  0, 1, 0,     // v1-v6-v7-v2 left
-    0, 1, 0,   0, 1, 0,   0, 1, 0,  0, 1, 0,     // v7-v4-v3-v2 down
-    0, 1, 0,   0, 1, 0,   0, 1, 0,  0, 1, 0　    // v4-v7-v6-v5 back
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v1-v2-v3 front
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v3-v4-v5 right
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v5-v6-v1 up
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v1-v6-v7-v2 left
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v7-v4-v3-v2 down
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0　    // v4-v7-v6-v5 back
  ]);
 
 
@@ -223,12 +181,11 @@ function initVertexBuffers(gl) {
     20,21,22,  20,22,23     // back
  ]);
 
- 
+
   // Write the vertex property to buffers (coordinates, colors and normals)
-  if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT, 0)) return -1;
-  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT, 0)) return -1;
-  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT, 0)) return -1;
-  if (!initArrayBuffer(gl, 'a_TexCoord', vertices, 3, gl.FLOAT, 3)) return -1;
+  if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
 
   // Write the indices to the buffer object
   var indexBuffer = gl.createBuffer();
@@ -239,22 +196,11 @@ function initVertexBuffers(gl) {
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-  
-
-  var vertexTextCoordBuffer = gl.createBuffer();
-  if(!vertexTextCoordBuffer){
-    console.log("Failed to create the buffer object");
-    return false;
-  }
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextCoordBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
 
   return indices.length;
 }
 
-function initArrayBuffer (gl, attribute, data, num, type, offset) {
+function initArrayBuffer (gl, attribute, data, num, type) {
   // Create a buffer object
   var buffer = gl.createBuffer();
   if (!buffer) {
@@ -270,7 +216,7 @@ function initArrayBuffer (gl, attribute, data, num, type, offset) {
     console.log('Failed to get the storage location of ' + attribute);
     return false;
   }
-  gl.vertexAttribPointer(a_attribute, num, type, false, 0, offset);
+  gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
   // Enable the assignment of the buffer object to the attribute variable
   gl.enableVertexAttribArray(a_attribute);
 
@@ -377,17 +323,16 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 
   // Model the chair seat
   pushMatrix(modelMatrix);
-    modelMatrix.scale(5, 0.1, 5); // Scale
+    modelMatrix.scale(2.0, 0.5, 2.0); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
   // Model the chair back
-  /*pushMatrix(modelMatrix);
+  pushMatrix(modelMatrix);
     modelMatrix.translate(0, 1.25, -0.75);  // Translation
     modelMatrix.scale(2.0, 2.0, 0.5); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
-  */
 }
 
 function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
@@ -406,4 +351,3 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
 
   modelMatrix = popMatrix();
 }
-
