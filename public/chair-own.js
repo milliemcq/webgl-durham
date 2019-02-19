@@ -428,7 +428,7 @@ function initTextures(gl, n) {
   // Register the event handler to be called on loading an image
   image.onload = function(){ loadTexture(gl, n, texture, u_Sampler, image); };
   // Tell the browser to load an image
-  image.src = '../textures/grass.jpg';
+  image.src = '/textures/grass.jpg';
 
   return true;
 }
@@ -450,5 +450,5 @@ function loadTexture(gl, n, texture, u_Sampler, image) {
   
   gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
 
-  //gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
 }
