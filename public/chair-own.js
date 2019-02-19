@@ -228,7 +228,7 @@ function initVertexBuffers(gl) {
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT, 0)) return -1;
   if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT, 0)) return -1;
   if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT, 0)) return -1;
-  if (!initArrayBuffer(gl, 'a_TexCoord', vertices, 3, gl.FLOAT, 3)) return -1;
+  if (!initArrayBuffer(gl, 'a_TexCoord', vertices, 2, gl.FLOAT, 3)) return -1;
 
   // Write the indices to the buffer object
   var indexBuffer = gl.createBuffer();
@@ -270,7 +270,7 @@ function initArrayBuffer (gl, attribute, data, num, type, offset) {
     console.log('Failed to get the storage location of ' + attribute);
     return false;
   }
-  gl.vertexAttribPointer(a_attribute, num, type, false, 0, offset);
+  gl.vertexAttribPointer(a_attribute, num, type, false, 0, offset * Float32Array.BYTES_PER_ELEMENT);
   // Enable the assignment of the buffer object to the attribute variable
   gl.enableVertexAttribArray(a_attribute);
 
@@ -450,5 +450,5 @@ function loadTexture(gl, n, texture, u_Sampler, image) {
   
   gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
 
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
+  //gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
 }
