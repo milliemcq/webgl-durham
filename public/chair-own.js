@@ -226,7 +226,7 @@ function initVertexBuffers(gl) {
  
   // Write the vertex property to buffers (coordinates, colors and normals)
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT, 0)) return -1;
-  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT, 0)) return -1;
+  //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT, 0)) return -1;
   if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT, 0)) return -1;
   if (!initArrayBuffer(gl, 'a_TexCoord', vertices, 2, gl.FLOAT, 3)) return -1;
 
@@ -279,6 +279,7 @@ function initArrayBuffer (gl, attribute, data, num, type, offset) {
   return true;
 }
 
+/*
 function initAxesVertexBuffers(gl) {
 
   var verticesColors = new Float32Array([
@@ -326,7 +327,7 @@ function initAxesVertexBuffers(gl) {
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
   return n;
-}
+} */
 
 var g_matrixStack = []; // Array for storing a matrix
 function pushMatrix(m) { // Store the specified matrix to the array
@@ -346,7 +347,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   gl.uniform1i(u_isLighting, false); // Will not apply lighting
 
   // Set the vertex coordinates and color (for the x, y axes)
-
+  /*
   var n = initAxesVertexBuffers(gl);
   if (n < 0) {
     console.log('Failed to set the vertex information');
@@ -359,7 +360,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
 
   // Draw x and y axes
-  gl.drawArrays(gl.LINES, 0, n);
+  gl.drawArrays(gl.LINES, 0, n);*/
 
   gl.uniform1i(u_isLighting, true); // Will apply lighting
 
@@ -425,6 +426,11 @@ function initTextures(gl, n) {
     console.log('Failed to create the image object');
     return false;
   }
+
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+    new Uint8Array([0, 0, 255, 255]));
   // Register the event handler to be called on loading an image
   image.onload = function(){ loadTexture(gl, n, texture, u_Sampler, image); };
   // Tell the browser to load an image
@@ -434,7 +440,7 @@ function initTextures(gl, n) {
 }
 
 function loadTexture(gl, n, texture, u_Sampler, image) {
-  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+  //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
   // Enable texture unit0
   gl.activeTexture(gl.TEXTURE0);
   // Bind the texture object to the target
