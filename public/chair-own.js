@@ -227,7 +227,7 @@ function initVertexBuffers(gl) {
   // Write the vertex property to buffers (coordinates, colors and normals)
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT, 0)) return -1;
   //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT, 0)) return -1;
-  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT, 0)) return -1;
+  //if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT, 0)) return -1;
   if (!initArrayBuffer(gl, 'a_TexCoord', vertices, 2, gl.FLOAT, 3)) return -1;
 
   // Write the indices to the buffer object
