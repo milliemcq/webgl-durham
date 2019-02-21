@@ -185,6 +185,8 @@ var main = function () {
 
 	gl.enableVertexAttribArray(positionAttribLocation);
     gl.enableVertexAttribArray(texCoordAttribLocation);
+
+    var boxTexture = gl.createTexture();
     
     var image = new Image();  // Create the image object
     if (!image) {
@@ -192,7 +194,7 @@ var main = function () {
         return false;
     }
 
-    image.onload = function(){ loadTexture(image); };
+    image.onload = function(){ loadTexture(gl, boxTexture, image);};
     // Tell the browser to load an image
     image.src = '/textures/grass.jpg';
 
@@ -247,8 +249,8 @@ var main = function () {
 	requestAnimationFrame(loop);
 };
 
-function loadTexture(gl, n, texture, u_Sampler, image) {
-    var boxTexture = gl.createTexture();
+function loadTexture(gl, boxTexture, image) {
+    
 	gl.bindTexture(gl.TEXTURE_2D, boxTexture);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -257,9 +259,8 @@ function loadTexture(gl, n, texture, u_Sampler, image) {
 	gl.texImage2D(
 		gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
 		gl.UNSIGNED_BYTE,
-		document.getElementById('crate-image')
+		image
 	);
 	gl.bindTexture(gl.TEXTURE_2D, null);
 
-	
   }
