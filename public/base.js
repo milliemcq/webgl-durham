@@ -4,6 +4,7 @@ var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' +
   'attribute vec4 a_Color;\n' +
   'attribute vec4 a_Normal;\n' +        // Normal
+  'attribute vec2 a_TextureCoord;\n' +
   'uniform mat4 u_ModelMatrix;\n' +
   'uniform mat4 u_NormalMatrix;\n' +
   'uniform mat4 u_ViewMatrix;\n' +
@@ -11,9 +12,11 @@ var VSHADER_SOURCE =
   'uniform vec3 u_LightColor;\n' +     // Light color
   'uniform vec3 u_LightDirection;\n' + // Light direction (in the world coordinate, normalized)
   'varying vec4 v_Color;\n' +
+  'varying highp vec2 v_TextureCoord;\n' +
   'uniform bool u_isLighting;\n' +
   'void main() {\n' +
   '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
+  '  v_TextureCoord = a_TextureCoord; \n' +
   '  if(u_isLighting)\n' + 
   '  {\n' +
   '     vec3 normal = normalize((u_NormalMatrix * a_Normal).xyz);\n' +
@@ -33,8 +36,10 @@ var FSHADER_SOURCE =
   'precision mediump float;\n' +
   '#endif\n' +
   'varying vec4 v_Color;\n' +
+  'varying highp vec2 v_TextureCoord;\n' +
+  'uniform sampler2D sampler; \n' +
   'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
+  '   gl_FragColor = texture2D(sampler, v_TextureCoord);\n' +
   '}\n';
 
 var modelMatrix = new Matrix4(); // The model matrix
@@ -77,6 +82,7 @@ function main() {
   var u_ProjMatrix = gl.getUniformLocation(gl.program, 'u_ProjMatrix');
   var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
   var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
+  var a_TextureCoord = gl.getUniformLocation(gl.program, 'a_TextureCoord');
 
   // Trigger using lighting or not
   var u_isLighting = gl.getUniformLocation(gl.program, 'u_isLighting'); 
@@ -296,7 +302,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 
   // Set the vertex coordinates and color (for the x, y axes)
 
-  var n = initAxesVertexBuffers(gl);
+  /*var n = initAxesVertexBuffers(gl);
   if (n < 0) {
     console.log('Failed to set the vertex information');
     return;
@@ -308,7 +314,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
 
   // Draw x and y axes
-  gl.drawArrays(gl.LINES, 0, n);
+  gl.drawArrays(gl.LINES, 0, n);*/
 
   gl.uniform1i(u_isLighting, true); // Will apply lighting
 
