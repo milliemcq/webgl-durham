@@ -37,9 +37,9 @@ var FSHADER_SOURCE =
   '#endif\n' +
   'varying vec4 v_Color;\n' +
   'varying highp vec2 v_TextureCoord;\n' +
-  'uniform sampler2D sampler; \n' +
+  'uniform sampler2D u_Sampler; \n' +
   'void main() {\n' +
-  '   gl_FragColor = texture2D(sampler, v_TextureCoord);\n' +
+  '   gl_FragColor = texture2D(u_Sampler, v_TextureCoord);\n' +
   '}\n';
 
 var modelMatrix = new Matrix4(); // The model matrix
@@ -82,7 +82,8 @@ function main() {
   var u_ProjMatrix = gl.getUniformLocation(gl.program, 'u_ProjMatrix');
   var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
   var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
-  var a_TextureCoord = gl.getUniformLocation(gl.program, 'a_TextureCoord');
+  var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
+
 
   // Trigger using lighting or not
   var u_isLighting = gl.getUniformLocation(gl.program, 'u_isLighting'); 
@@ -110,13 +111,13 @@ function main() {
 
 
   document.onkeydown = function(ev){
-    keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler);
   };
 
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler);
 }
 
-function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
+function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler) {
   switch (ev.keyCode) {
     case 40: // Up arrow key -> the positive rotation of arm1 around the y-axis
       g_xAngle = (g_xAngle + ANGLE_STEP) % 360;
@@ -134,7 +135,7 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   }
 
   // Draw the scene
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler);
 }
 
 
@@ -179,7 +180,7 @@ function initVertexBuffers(gl) {
   const textureCoordBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
   var textureCoordinates = new Float32Array([  
-	1.0, 1.0,	0.0, 1.0,	0.0, 0.0,	1.0, 0.0, //front 
+	1.0, 1.0,	100.0, 1.0,	0.0, 0.0,	1.0, 0.0, //front 
 	0.0, 1.0,	0.0, 0.0,	1.0, 0.0,	1.0, 1.0, //right
 	1.0, 0.0,	1.0, 1.0,	0.0, 1.0,	0.0, 0.0, //top
 	1.0, 1.0,	0.0, 1.0,	0.0, 0.0,	1.0, 0.0, //left
@@ -201,8 +202,8 @@ function initVertexBuffers(gl) {
 
   // Write the vertex property to buffers (coordinates, colors and normals)
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
+  //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
+  //if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
   if (!initArrayBuffer(gl, 'a_TextureCoord', vertices, 2, gl.FLOAT)) return -1;
 
   const texture = loadTexture(gl, 'cubetexture.png');
@@ -279,14 +280,14 @@ function initAxesVertexBuffers(gl) {
   gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 6, 0);
   gl.enableVertexAttribArray(a_Position);  // Enable the assignment of the buffer object
 
-  // Get the storage location of a_Position, assign buffer and enable
+  /* Get the storage location of a_Position, assign buffer and enable
   var a_Color = gl.getAttribLocation(gl.program, 'a_Color');
   if(a_Color < 0) {
     console.log('Failed to get the storage location of a_Color');
     return -1;
   }
   gl.vertexAttribPointer(a_Color, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
-  gl.enableVertexAttribArray(a_Color);  // Enable the assignment of the buffer object
+  gl.enableVertexAttribArray(a_Color);   Enable the assignment of the buffer object */
 
   // Unbind the buffer object
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
@@ -294,28 +295,12 @@ function initAxesVertexBuffers(gl) {
   return n;
 }
 
-function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
+function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler) {
 
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   gl.uniform1i(u_isLighting, false); // Will not apply lighting
-
-  // Set the vertex coordinates and color (for the x, y axes)
-
-  /*var n = initAxesVertexBuffers(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  // Calculate the view matrix and the projection matrix
-  modelMatrix.setTranslate(0, 0, 0);  // No Translation
-  // Pass the model matrix to the uniform variable
-  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
-
-  // Draw x and y axes
-  gl.drawArrays(gl.LINES, 0, n);*/
 
   gl.uniform1i(u_isLighting, true); // Will apply lighting
 
@@ -325,6 +310,8 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
     console.log('Failed to set the vertex information');
     return;
   }
+
+  const texture = loadTexture(gl);
 
   // Rotate, and then translate
   modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
@@ -340,6 +327,15 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   g_normalMatrix.transpose();
   gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
 
+  // Tell WebGL we want to affect texture unit 0
+  gl.activeTexture(gl.TEXTURE0);
+
+  // Bind the texture to texture unit 0
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Tell the shader we bound the texture to texture unit 0
+  gl.uniform1i(u_Sampler, 0);
+
   // Draw the cube
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
@@ -353,10 +349,10 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 // Initialize a texture and load an image.
 // When the image finished loading copy it into the texture.
 //
-function loadTexture(gl, url) {
+function loadTexture(gl) {
 	const texture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, texture);
-  
+	
 	// Because images have to be download over the internet
 	// they might take a moment until they are ready.
 	// Until then put a single pixel in the texture so we can
@@ -369,7 +365,7 @@ function loadTexture(gl, url) {
 	const border = 0;
 	const srcFormat = gl.RGBA;
 	const srcType = gl.UNSIGNED_BYTE;
-	const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
+	const pixel = new Uint8Array([0, 225, 50, 20]);  // opaque blue
 	gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
 				  width, height, border, srcFormat, srcType,
 				  pixel);
