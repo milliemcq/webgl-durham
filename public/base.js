@@ -203,6 +203,7 @@ function initVertexBuffers(gl) {
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
   if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
   if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_TextureCoord', vertices, 2, gl.FLOAT)) return -1;
 
   const texture = loadTexture(gl, 'cubetexture.png');
 
