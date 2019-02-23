@@ -68,6 +68,13 @@ function main() {
     return;
   }
 
+  var n = initVertexBuffers(gl);
+
+  if (!initTextures(gl, n)) {
+    console.log('Failed to intialize textures.');
+    return;
+  }
+
   // Set clear color and enable hidden surface removal
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
@@ -181,7 +188,7 @@ function initVertexBuffers(gl) {
   const textureCoordBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
   var textureCoordinates = new Float32Array([  
-	1.0, 1.0,	100.0, 1.0,	0.0, 0.0,	1.0, 0.0, //front 
+	1.0, 1.0,	0.0, 1.0,	0.0, 0.0,	1.0, 0.0, //front 
 	0.0, 1.0,	0.0, 0.0,	1.0, 0.0,	1.0, 1.0, //right
 	1.0, 0.0,	1.0, 1.0,	0.0, 1.0,	0.0, 0.0, //top
 	1.0, 1.0,	0.0, 1.0,	0.0, 0.0,	1.0, 0.0, //left
@@ -226,7 +233,7 @@ function initVertexBuffers(gl) {
   }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextCoordBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, textureCoordinates, gl.STATIC_DRAW);
 
   return indices.length;
 }
@@ -305,7 +312,7 @@ function initAxesVertexBuffers(gl) {
   return n;
 }
 
-function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler) {
+function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -321,7 +328,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler) {
     return;
   }
 
-  const texture = loadTexture(gl);
+  //const texture = loadTexture(gl);
 
   // Rotate, and then translate
   modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
@@ -337,29 +344,15 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler) {
   g_normalMatrix.transpose();
   gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
 
-  // Tell WebGL we want to affect texture unit 0
-  gl.activeTexture(gl.TEXTURE0);
-
-  // Bind the texture to texture unit 0
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-
-  // Tell the shader we bound the texture to texture unit 0
-  gl.uniform1i(u_Sampler, 0);
-
   // Draw the cube
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
 
+/*
 function loadTexture(gl) {
 	const texture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, texture);
-  
-	// Because images have to be download over the internet
-	// they might take a moment until they are ready.
-	// Until then put a single pixel in the texture so we can
-	// use it immediately. When the image has finished downloading
-	// we'll update the texture with the contents of the image.
-	
+
 	const level = 0;
 	const internalFormat = gl.RGBA;
 	const width = 1;
@@ -391,7 +384,7 @@ function loadTexture(gl) {
 		 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 	  }
 	};
-	image.src = '/textures/grass.jpg';
+	image.src = './textures/buildingTexture.jpg';
   
 	return texture;
   }
@@ -399,3 +392,57 @@ function loadTexture(gl) {
   function isPowerOf2(value) {
 	return (value & (value - 1)) == 0;
   }
+  */
+
+ function initTextures(gl, n) {
+	var texture = gl.createTexture();   // Create a texture object
+	if (!texture) {
+	  console.log('Failed to create the texture object');
+	  return false;
+	}
+  
+	// Get the storage location of u_Sampler
+	var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
+	if (!u_Sampler) {
+	  console.log('Failed to get the storage location of u_Sampler');
+	  return false;
+	}
+	var image = new Image();  // Create the image object
+	if (!image) {
+	  console.log('Failed to create the image object');
+	  return false;
+	}
+  
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+  
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+	  new Uint8Array([0, 0, 255, 255]));
+	// Register the event handler to be called on loading an image
+	image.onload = function(){ loadTexture(gl, n, texture, u_Sampler, image); };
+	// Tell the browser to load an image
+	image.src = '/textures/grass.jpg';
+  
+	return true;
+  }
+
+
+function loadTexture(gl, n, texture, u_Sampler, image) {
+	//gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+	// Enable texture unit0
+	gl.activeTexture(gl.TEXTURE0);
+	// Bind the texture object to the target
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+  
+	// Set the texture parameters
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	// Set the texture image
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+	
+	// Set the texture unit 0 to the sampler
+	gl.uniform1i(u_Sampler, 0);
+	
+	gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
+  
+	//gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
+  }
+  
