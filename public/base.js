@@ -170,7 +170,9 @@ function initVertexBuffers(gl) {
     0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // v4-v7-v6-v5 back
   ]);
 
-  var textCoord = new Float32Array([  
+  const textureCoordBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+  var textureCoordinates = new Float32Array([  
 	1.0, 1.0,	0.0, 1.0,	0.0, 0.0,	1.0, 0.0, //front 
 	0.0, 1.0,	0.0, 0.0,	1.0, 0.0,	1.0, 1.0, //right
 	1.0, 0.0,	1.0, 1.0,	0.0, 1.0,	0.0, 0.0, //top
@@ -178,7 +180,7 @@ function initVertexBuffers(gl) {
 	0.0, 1.0,	1.0, 0.0,	1.0, 1.0,	0.0, 1.0, //bottom
 	0.0, 1.0,	1.0, 0.0,	1.0, 1.0,	0.0, 1.0, //back
   ]);
-
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
 
   // Indices of the vertices
   var indices = new Uint8Array([
