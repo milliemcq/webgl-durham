@@ -29,7 +29,7 @@ var fragmentShaderText =
 '}'
 ].join('\n');
 
-var InitDemo = function () {
+var main = function () {
 	console.log('This is working');
 
 	var canvas = document.getElementById('webgl');
