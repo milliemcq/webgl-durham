@@ -15,8 +15,8 @@ var VSHADER_SOURCE =
   'varying highp vec2 v_TextureCoord;\n' +
   'uniform bool u_isLighting;\n' +
   'void main() {\n' +
-  '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
   '  v_TextureCoord = a_TextureCoord; \n' +
+  '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
   '  if(u_isLighting)\n' + 
   '  {\n' +
   '     vec3 normal = normalize((u_NormalMatrix * a_Normal).xyz);\n' +
@@ -36,7 +36,7 @@ var FSHADER_SOURCE =
   'precision mediump float;\n' +
   '#endif\n' +
   'varying vec4 v_Color;\n' +
-  'varying highp vec2 v_TextureCoord;\n' +
+  'varying vec2 v_TextureCoord;\n' +
   'uniform sampler2D u_Sampler; \n' +
   'void main() {\n' +
   '   gl_FragColor = texture2D(u_Sampler, v_TextureCoord);\n' +
@@ -85,6 +85,7 @@ function main() {
   var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
 
 
+
   // Trigger using lighting or not
   var u_isLighting = gl.getUniformLocation(gl.program, 'u_isLighting'); 
 
@@ -111,13 +112,13 @@ function main() {
 
 
   document.onkeydown = function(ev){
-    keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler);
+    keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
   };
 
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
 }
 
-function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler) {
+function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   switch (ev.keyCode) {
     case 40: // Up arrow key -> the positive rotation of arm1 around the y-axis
       g_xAngle = (g_xAngle + ANGLE_STEP) % 360;
@@ -135,7 +136,7 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler)
   }
 
   // Draw the scene
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
 }
 
 
@@ -204,9 +205,9 @@ function initVertexBuffers(gl) {
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
   //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
   //if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_TextureCoord', vertices, 2, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_TextureCoord', textureCoordinates, 2, gl.FLOAT)) return -1;
 
-  const texture = loadTexture(gl, 'cubetexture.png');
+  
 
   // Write the indices to the buffer object
   var indexBuffer = gl.createBuffer();
@@ -217,6 +218,15 @@ function initVertexBuffers(gl) {
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+  var vertexTextCoordBuffer = gl.createBuffer();
+  if(!vertexTextCoordBuffer){
+    console.log("Failed to create the buffer object");
+    return false;
+  }
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextCoordBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
   return indices.length;
 }
@@ -300,7 +310,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler) {
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  gl.uniform1i(u_isLighting, false); // Will not apply lighting
+  //gl.uniform1i(u_isLighting, false); // Will not apply lighting
 
   gl.uniform1i(u_isLighting, true); // Will apply lighting
 
@@ -340,24 +350,16 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler) {
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
 
-
-
-
-
-
-//
-// Initialize a texture and load an image.
-// When the image finished loading copy it into the texture.
-//
 function loadTexture(gl) {
 	const texture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, texture);
-	
+  
 	// Because images have to be download over the internet
 	// they might take a moment until they are ready.
 	// Until then put a single pixel in the texture so we can
 	// use it immediately. When the image has finished downloading
 	// we'll update the texture with the contents of the image.
+	
 	const level = 0;
 	const internalFormat = gl.RGBA;
 	const width = 1;
@@ -365,16 +367,15 @@ function loadTexture(gl) {
 	const border = 0;
 	const srcFormat = gl.RGBA;
 	const srcType = gl.UNSIGNED_BYTE;
-	const pixel = new Uint8Array([0, 225, 50, 20]);  // opaque blue
+	const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
 	gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
 				  width, height, border, srcFormat, srcType,
-				  pixel);
+				  pixel); 
   
 	const image = new Image();
 	image.onload = function() {
 	  gl.bindTexture(gl.TEXTURE_2D, texture);
-	  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-					srcFormat, srcType, image);
+	  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
   
 	  // WebGL1 has different requirements for power of 2 images
 	  // vs non power of 2 images so check if the image is a
