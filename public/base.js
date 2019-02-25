@@ -69,7 +69,7 @@ function main() {
   }
 
   var n = initVertexBuffers(gl);
-
+  
   if (!initTextures(gl, n)) {
     console.log('Failed to intialize textures.');
     return;
@@ -210,8 +210,8 @@ function initVertexBuffers(gl) {
 
   // Write the vertex property to buffers (coordinates, colors and normals)
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
-  //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
-  //if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
   if (!initArrayBuffer(gl, 'a_TextureCoord', textureCoordinates, 2, gl.FLOAT)) return -1;
 
   
@@ -292,21 +292,9 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   modelMatrix = popMatrix();
 
   pushMatrix(modelMatrix);
-  
     modelMatrix.scale(1, 1, 1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
-  /*
-  // Pass the model matrix to the uniform variable
-  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
-
-  // Calculate the normal transformation matrix and pass it to u_NormalMatrix
-  g_normalMatrix.setInverseOf(modelMatrix);
-  g_normalMatrix.transpose();
-  gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
-
-  // Draw the cube
-  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);*/
 }
 
 var g_matrixStack = []; // Array for storing a matrix
