@@ -284,8 +284,17 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   modelMatrix.setTranslate(0, -2, 0);  // Translation (No translation is supported here)
   modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.scale(3, 0.05,3 ); // Scale
+  
+  pushMatrix(modelMatrix);
+    modelMatrix.scale(3, 0.05,3 ); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
 
+  pushMatrix(modelMatrix);
+    modelMatrix.scale(3, 3, 0.05 ); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+  /*
   // Pass the model matrix to the uniform variable
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
 
@@ -295,7 +304,35 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
 
   // Draw the cube
-  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);*/
+}
+
+var g_matrixStack = []; // Array for storing a matrix
+function pushMatrix(m) { // Store the specified matrix to the array
+  var m2 = new Matrix4(m);
+  g_matrixStack.push(m2);
+}
+
+function popMatrix() { // Retrieve the matrix from the array
+  return g_matrixStack.pop();
+}
+
+
+function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
+  pushMatrix(modelMatrix);
+
+    // Pass the model matrix to the uniform variable
+    gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+
+    // Calculate the normal transformation matrix and pass it to u_NormalMatrix
+    g_normalMatrix.setInverseOf(modelMatrix);
+    g_normalMatrix.transpose();
+    gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
+
+    // Draw the cube
+    gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+
+  modelMatrix = popMatrix();
 }
 
  function initTextures(gl, n) {
