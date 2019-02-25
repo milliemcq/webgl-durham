@@ -292,7 +292,8 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   modelMatrix = popMatrix();
 
   pushMatrix(modelMatrix);
-    modelMatrix.scale(1, 1, 1); // Scale
+    modelMatrix.translate(2, -1.75, 1.5); 
+    modelMatrix.scale(0.4, 0.3, 0.3); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 }
