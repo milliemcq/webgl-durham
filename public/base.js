@@ -281,17 +281,19 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   }
 
   // Rotate, and then translate
-  modelMatrix.setTranslate(0, -2, 0);  // Translation (No translation is supported here)
+  modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
   modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
   
   pushMatrix(modelMatrix);
+    modelMatrix.translate(0, -2, 0); 
     modelMatrix.scale(3, 0.05,3 ); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
   pushMatrix(modelMatrix);
-    modelMatrix.scale(3, 3, 0.05 ); // Scale
+  
+    modelMatrix.scale(1, 1, 1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
   /*
