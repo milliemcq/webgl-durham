@@ -198,9 +198,10 @@ var main = function () {
 	gl.texImage2D(
 		gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
 		gl.UNSIGNED_BYTE,
-		document.getElementById('crate-image')
+		document.getElementById('grass_texture')
 	);
 	gl.bindTexture(gl.TEXTURE_2D, null);
+	
 
 	// Tell OpenGL state machine which program should be active.
 	gl.useProgram(program);

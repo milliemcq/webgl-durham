@@ -1,60 +1,41 @@
 // Directional lighting demo: By Frederick Li
 // Vertex shader program
 var VSHADER_SOURCE =
-'attribute vec4 a_Position;\n' +
-'attribute vec4 a_Color;\n' +
-'attribute vec4 a_Normal;\n' +
-'attribute vec2 a_TexCoords;\n' +
-'uniform mat4 u_MvpMatrix;\n' +
-'uniform mat4 u_ModelMatrix;\n' +    // Model matrix
-'uniform mat4 u_NormalMatrix;\n' +
-'uniform mat4 u_ViewMatrix;\n' +
-'uniform mat4 u_ProjMatrix;\n' +   // Transformation matrix of the normal
-'varying vec4 v_Color;\n' +
-'varying vec3 v_Normal;\n' +
-'varying vec2 v_TexCoords;\n' +
-'varying vec3 v_Position;\n' +
-'void main() {\n' +
-'gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
-   // Calculate the vertex position in the world coordinate
-'  v_Position = vec3(u_ModelMatrix * a_Position);\n' +
-'  v_Normal = normalize(vec3(u_NormalMatrix * a_Normal));\n' +
-'  v_Color = a_Color;\n' + 
-'  v_TexCoords = a_TexCoords;\n' +
-'}\n';
+  'attribute vec4 a_Position;\n' +
+  'attribute vec4 a_Color;\n' +
+  'attribute vec4 a_Normal;\n' +        // Normal
+  'uniform mat4 u_ModelMatrix;\n' +
+  'uniform mat4 u_NormalMatrix;\n' +
+  'uniform mat4 u_ViewMatrix;\n' +
+  'uniform mat4 u_ProjMatrix;\n' +
+  'uniform vec3 u_LightColor;\n' +     // Light color
+  'uniform vec3 u_LightDirection;\n' + // Light direction (in the world coordinate, normalized)
+  'varying vec4 v_Color;\n' +
+  'uniform bool u_isLighting;\n' +
+  'void main() {\n' +
+  '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
+  '  if(u_isLighting)\n' + 
+  '  {\n' +
+  '     vec3 normal = normalize((u_NormalMatrix * a_Normal).xyz);\n' +
+  '     float nDotL = max(dot(normal, u_LightDirection), 0.0);\n' +
+        // Calculate the color due to diffuse reflection
+  '     vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;\n' +
+  '     v_Color = vec4(diffuse, a_Color.a);\n' +  '  }\n' +
+  '  else\n' +
+  '  {\n' +
+  '     v_Color = a_Color;\n' +
+  '  }\n' + 
+  '}\n';
 
 // Fragment shader program
 var FSHADER_SOURCE =
-'#ifdef GL_ES\n' +
-'precision mediump float;\n' +
-'#endif\n' +
-'uniform bool u_UseTextures;\n' +    // Texture enable/disable flag
-'uniform vec3 u_LightColor;\n' +     // Light color
-'uniform vec3 u_LightPosition;\n' +  // Position of the light source
-'uniform vec3 u_AmbientLight;\n' +   // Ambient light color
-'varying vec3 v_Normal;\n' +
-'varying vec3 v_Position;\n' +
-'varying vec4 v_Color;\n' +
-'uniform sampler2D u_Sampler;\n' +
-'varying vec2 v_TexCoords;\n' +
-'void main() {\n' +
-   // Normalize the normal because it is interpolated and not 1.0 in length any more
-'  vec3 normal = normalize(v_Normal);\n' +
-   // Calculate the light direction and make its length 1.
-'  vec3 lightDirection = normalize(u_LightPosition - v_Position);\n' +
-   // The dot product of the light direction and the orientation of a surface (the normal)
-'  float nDotL = max(dot(lightDirection, normal), 0.0);\n' +
-   // Calculate the final color from diffuse reflection and ambient reflection
-'  vec3 diffuse;\n' +
-'  if (u_UseTextures) {\n' +
-'     vec4 TexColor = texture2D(u_Sampler, v_TexCoords);\n' +
-'     diffuse = u_LightColor * TexColor.rgb * nDotL * 1.2;\n' +
-'  } else {\n' +
-'     diffuse = u_LightColor * v_Color.rgb * nDotL;\n' +
-'  }\n' +
-'  vec3 ambient = u_AmbientLight * v_Color.rgb;\n' +
-'  gl_FragColor = vec4(diffuse + ambient, v_Color.a);\n' +
-'}\n';
+  '#ifdef GL_ES\n' +
+  'precision mediump float;\n' +
+  '#endif\n' +
+  'varying vec4 v_Color;\n' +
+  'void main() {\n' +
+  '  gl_FragColor = v_Color;\n' +
+  '}\n';
 
 var modelMatrix = new Matrix4(); // The model matrix
 var viewMatrix = new Matrix4();  // The view matrix
@@ -81,13 +62,6 @@ function main() {
     console.log('Failed to intialize shaders.');
     return;
   }
-  /*
-  var n = initVertexBuffers(gl);
-  
-  if (!initTextures(gl, n)) {
-    console.log('Failed to intialize textures.');
-    return;
-  }*/
 
   // Set clear color and enable hidden surface removal
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -103,9 +77,6 @@ function main() {
   var u_ProjMatrix = gl.getUniformLocation(gl.program, 'u_ProjMatrix');
   var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
   var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
-  var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
-
-
 
   // Trigger using lighting or not
   var u_isLighting = gl.getUniformLocation(gl.program, 'u_isLighting'); 
@@ -118,7 +89,7 @@ function main() {
   }
 
   // Set the light color (white)
-  gl.uniform3fv(u_LightColor, 1.0, 1.0, 1.0);
+  gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
   // Set the light direction (in the world coordinate)
   var lightDirection = new Vector3([0.5, 3.0, 4.0]);
   lightDirection.normalize();     // Normalize
@@ -157,7 +128,7 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   }
 
   // Draw the scene
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler, u_UseTextures);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
 }
 
 
@@ -171,12 +142,12 @@ function initVertexBuffers(gl) {
   //  |/      |/
   //  v2------v3
   var vertices = new Float32Array([   // Coordinates
-     1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0, // v0-v1-v2-v3 front
-     1.0, 1.0, 1.0,   1.0,-1.0, 1.0,   1.0,-1.0,-1.0,   1.0, 1.0,-1.0, // v0-v3-v4-v5 right
-     1.0, 1.0, 1.0,   1.0, 1.0,-1.0,  -1.0, 1.0,-1.0,  -1.0, 1.0, 1.0, // v0-v5-v6-v1 up
-    -1.0, 1.0, 1.0,  -1.0, 1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0,-1.0, 1.0, // v1-v6-v7-v2 left
-    -1.0,-1.0,-1.0,   1.0,-1.0,-1.0,   1.0,-1.0, 1.0,  -1.0,-1.0, 1.0, // v7-v4-v3-v2 down
-     1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0  // v4-v7-v6-v5 back
+     0.5, 0.5, 0.5,  -0.5, 0.5, 0.5,  -0.5,-0.5, 0.5,   0.5,-0.5, 0.5, // v0-v1-v2-v3 front
+     0.5, 0.5, 0.5,   0.5,-0.5, 0.5,   0.5,-0.5,-0.5,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
+     0.5, 0.5, 0.5,   0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, 0.5, 0.5, // v0-v5-v6-v1 up
+    -0.5, 0.5, 0.5,  -0.5, 0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
+    -0.5,-0.5,-0.5,   0.5,-0.5,-0.5,   0.5,-0.5, 0.5,  -0.5,-0.5, 0.5, // v7-v4-v3-v2 down
+     0.5,-0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5, 0.5,-0.5,   0.5, 0.5,-0.5  // v4-v7-v6-v5 back
   ]);
 
 
@@ -199,17 +170,6 @@ function initVertexBuffers(gl) {
     0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // v4-v7-v6-v5 back
   ]);
 
-  const textureCoordBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
-  var textureCoordinates = new Float32Array([  
-	1.0, 1.0,	0.0, 1.0,	0.0, 0.0,	1.0, 0.0, //front 
-	0.0, 1.0,	0.0, 0.0,	1.0, 0.0,	1.0, 1.0, //right
-	1.0, 0.0,	1.0, 1.0,	0.0, 1.0,	0.0, 0.0, //top
-	1.0, 1.0,	0.0, 1.0,	0.0, 0.0,	1.0, 0.0, //left
-	0.0, 1.0,	1.0, 0.0,	1.0, 1.0,	0.0, 1.0, //bottom
-	0.0, 1.0,	1.0, 0.0,	1.0, 1.0,	0.0, 1.0, //back
-  ]);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
 
   // Indices of the vertices
   var indices = new Uint8Array([
@@ -226,9 +186,6 @@ function initVertexBuffers(gl) {
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
   if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
   if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_TextureCoord', textureCoordinates, 2, gl.FLOAT)) return -1;
-
-  
 
   // Write the indices to the buffer object
   var indexBuffer = gl.createBuffer();
@@ -239,15 +196,6 @@ function initVertexBuffers(gl) {
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-
-  var vertexTextCoordBuffer = gl.createBuffer();
-  if(!vertexTextCoordBuffer){
-    console.log("Failed to create the buffer object");
-    return false;
-  }
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextCoordBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, textureCoordinates, gl.STATIC_DRAW);
 
   return indices.length;
 }
@@ -277,18 +225,88 @@ function initArrayBuffer (gl, attribute, data, num, type) {
   return true;
 }
 
+function initAxesVertexBuffers(gl) {
 
-function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler, u_UseTextures) {
-  var Cubetexture = gl.createTexture();   // Create a texture object
-  if (!Cubetexture) {
-    console.log('Failed to create the texture object');
+  var verticesColors = new Float32Array([
+    // Vertex coordinates and color (for axes)
+    -20.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // (x,y,z), (r,g,b) 
+     20.0,  0.0,   0.0,  1.0,  1.0,  1.0,
+     0.0,  20.0,   0.0,  1.0,  1.0,  1.0, 
+     0.0, -20.0,   0.0,  1.0,  1.0,  1.0,
+     0.0,   0.0, -20.0,  1.0,  1.0,  1.0, 
+     0.0,   0.0,  20.0,  1.0,  1.0,  1.0 
+  ]);
+  var n = 6;
+
+  // Create a buffer object
+  var vertexColorBuffer = gl.createBuffer();  
+  if (!vertexColorBuffer) {
+    console.log('Failed to create the buffer object');
     return false;
   }
+
+  // Bind the buffer object to target
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, verticesColors, gl.STATIC_DRAW);
+
+  var FSIZE = verticesColors.BYTES_PER_ELEMENT;
+  //Get the storage location of a_Position, assign and enable buffer
+  var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+  if (a_Position < 0) {
+    console.log('Failed to get the storage location of a_Position');
+    return -1;
+  }
+  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 6, 0);
+  gl.enableVertexAttribArray(a_Position);  // Enable the assignment of the buffer object
+
+  // Get the storage location of a_Position, assign buffer and enable
+  var a_Color = gl.getAttribLocation(gl.program, 'a_Color');
+  if(a_Color < 0) {
+    console.log('Failed to get the storage location of a_Color');
+    return -1;
+  }
+  gl.vertexAttribPointer(a_Color, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
+  gl.enableVertexAttribArray(a_Color);  // Enable the assignment of the buffer object
+
+  // Unbind the buffer object
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+  return n;
+}
+
+var g_matrixStack = []; // Array for storing a matrix
+function pushMatrix(m) { // Store the specified matrix to the array
+  var m2 = new Matrix4(m);
+  g_matrixStack.push(m2);
+}
+
+function popMatrix() { // Retrieve the matrix from the array
+  return g_matrixStack.pop();
+}
+
+function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  //gl.uniform1i(u_isLighting, false); // Will not apply lighting
+  gl.uniform1i(u_isLighting, false); // Will not apply lighting
+
+  // Set the vertex coordinates and color (for the x, y axes)
+
+  var n = initAxesVertexBuffers(gl);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  // Calculate the view matrix and the projection matrix
+  modelMatrix.setTranslate(0, 0, 0);  // No Translation
+  // Pass the model matrix to the uniform variable
+  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+
+  // Draw x and y axes
+  gl.drawArrays(gl.LINES, 0, n);
+
   gl.uniform1i(u_isLighting, true); // Will apply lighting
 
   // Set the vertex coordinates and color (for the cube)
@@ -302,42 +320,25 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Sampler, u_UseT
   modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
   modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  
+
+  // Model the chair seat
   pushMatrix(modelMatrix);
-    modelMatrix.translate(0, -2, 0); 
-    modelMatrix.scale(3, 0.05,3 ); // Scale
-    Cubetexture.image = new Image();  // Create the image object
-    if (!Cubetexture.image) {
-      console.log('Failed to create the image object');
-      return false;
-    }
-    Cubetexture.image.onload = function(){ loadTexAndDraw(gl, n, Cubetexture, u_Sampler, u_UseTextures); };
-    Cubetexture.image.src = '/textures/grass.jpg';
-    loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n);
+    modelMatrix.scale(2.0, 0.5, 2.0); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
+  // Model the chair back
   pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.75, 1.5); 
-    modelMatrix.scale(0.4, 0.3, 0.3); // Scale
-    loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n);
+    modelMatrix.translate(0, 1.25, -0.75);  // Translation
+    modelMatrix.scale(2.0, 2.0, 0.5); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 }
 
-var g_matrixStack = []; // Array for storing a matrix
-function pushMatrix(m) { // Store the specified matrix to the array
-  var m2 = new Matrix4(m);
-  g_matrixStack.push(m2);
-}
-
-function popMatrix() { // Retrieve the matrix from the array
-  return g_matrixStack.pop();
-}
-
-/*
 function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
   pushMatrix(modelMatrix);
 
-  // Pass the model matrix to the uniform variable
+    // Pass the model matrix to the uniform variable
     gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
 
     // Calculate the normal transformation matrix and pass it to u_NormalMatrix
@@ -345,58 +346,8 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
     g_normalMatrix.transpose();
     gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
 
-    gl.bindTexture(gl.TEXTURE_2D, boxTexture);
-		gl.activeTexture(gl.TEXTURE0);
-
     // Draw the cube
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
   modelMatrix = popMatrix();
-}*/
-
-
-function loadTexAndDraw(gl, n, texture, u_Sampler, u_UseTextures,  u_ModelMatrix, u_NormalMatrix,) {
-
-  pushMatrix(modelMatrix);
-
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
-
-    // Enable texture unit0
-    gl.activeTexture(gl.TEXTURE0);
-
-    // Bind the texture object to the target
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-
-    // Set the texture image
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    // Assign u_Sampler to TEXTURE0
-    gl.uniform1i(u_Sampler, 0);
-
-    // Enable texture mapping
-    gl.uniform1i(u_UseTextures, true);
-
-  // Pass the model matrix to the uniform variable
-    gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
-
-
-
-    // Calculate the normal transformation matrix and pass it to u_NormalMatrix
-    g_normalMatrix.setInverseOf(modelMatrix);
-    g_normalMatrix.transpose();
-    gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
-
-    gl.bindTexture(gl.TEXTURE_2D, boxTexture);
-		gl.activeTexture(gl.TEXTURE0);
-
-    // Draw the cube
-    gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
-
-  modelMatrix = popMatrix();
-  
-
 }
-  
