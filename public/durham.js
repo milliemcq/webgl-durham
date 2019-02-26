@@ -288,12 +288,12 @@ var vertices = new Float32Array([   // Coordinates
 
 
 var colors = new Float32Array([    // Colors
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v1-v2-v3 front
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v3-v4-v5 right
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v5-v6-v1 up
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v1-v6-v7-v2 left
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v7-v4-v3-v2 down
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+    0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v1-v2-v3 front
+    0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v3-v4-v5 right
+    0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v5-v6-v1 up
+    0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v1-v6-v7-v2 left
+    0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v7-v4-v3-v2 down
+    0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,　  // v4-v7-v6-v5 back
 ]);
 
 
@@ -445,7 +445,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 
   gl.uniform1i(u_isLighting, true); // Will apply lighting
 
-  // Set the vertex coordinates and color (for the cube)
+  // CREATE THE SIGN STAND
   var n = signStand(gl);
   if (n < 0) {
     console.log('Failed to set the vertex information');
@@ -458,13 +458,29 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
 
   pushMatrix(modelMatrix);
-    modelMatrix.translate(0, 1.25, -0.75);  // Translation
-    modelMatrix.scale(2.0, 2.0, 0.5); // Scale
+    modelMatrix.translate(-2, 1.25, -0.75);  // Translation
+    modelMatrix.scale(0.4, 0.3, 0.3); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
-  // Set the vertex coordinates and color (for the green cube)
+  // CREATE THE BASE
   var n = greenCube(gl);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  modelMatrix.setTranslate(0, -2, 0);  // Translation (No translation is supported here)
+  modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+
+  pushMatrix(modelMatrix);
+    modelMatrix.scale(6, 0.05, 6); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+  // CREATING ALL THE WALLS
+  var n = greyCube(gl);
   if (n < 0) {
     console.log('Failed to set the vertex information');
     return;
@@ -475,9 +491,9 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
 
-  // Model the chair seat
+
   pushMatrix(modelMatrix);
-    modelMatrix.scale(2.0, 0.5, 2.0); // Scale
+    modelMatrix.scale(0.4, 0.3, 0.3); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 }
