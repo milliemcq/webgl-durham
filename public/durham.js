@@ -64,7 +64,7 @@ function main() {
   }
 
   // Set clear color and enable hidden surface removal
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearColor( 0.74902, 0.847059, 0.9, 1.0);
   gl.enable(gl.DEPTH_TEST);
 
   // Clear color and depth buffer
