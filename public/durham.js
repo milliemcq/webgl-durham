@@ -472,7 +472,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   gl.uniform1i(u_isLighting, true); // Will apply lighting
 
     // Rotate, and then translate
-    modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
+    //modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
     modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
     modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
 
@@ -511,9 +511,6 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
-
-
-
   // CREATING ALL THE WALLS
   var n = greyCube(gl);
   if (n < 0) {
@@ -524,6 +521,14 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   pushMatrix(modelMatrix);
     modelMatrix.translate(-1.85, -1.5, -2.8);
     modelMatrix.scale(2, 1, 0.05); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(2, -1.55, -2.2);
+    modelMatrix.rotate(45,0,0,1);
+    modelMatrix.rotate(90,0,1,0);
+    modelMatrix.scale(0.7, 0.5, 0.05); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
