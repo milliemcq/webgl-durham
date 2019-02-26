@@ -46,10 +46,28 @@ var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
 
-function main() {
+var InitDemo = function () {
+    loadJSONResource('/building.json', function (modelErr, modelObj) {
+        if (modelErr) {
+            alert('Fatal error getting Susan model (see console)');
+            console.error(fsErr);
+        } else {
+            loadImage('/textures/buildingTexture.jpg', function (imgErr, img) {
+                if (imgErr) {
+                    alert('Fatal error getting Susan texture (see console)');
+                    console.error(imgErr);
+                } else { 
+                    main(modelObj);
+                }
+            });
+        }
+    });
+};
+	
+function main(buildingModel) {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
-
+  console.log(buildingModel);
   // Get the rendering context for WebGL
   var gl = getWebGLContext(canvas);
   if (!gl) {
@@ -520,7 +538,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 
   pushMatrix(modelMatrix);
     modelMatrix.translate(-1.85, -1.5, -2.8);
-    modelMatrix.scale(2, 1, 0.05); // Scale
+    modelMatrix.scale(2, 1, 0.1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
