@@ -361,7 +361,7 @@ function cylinder(gl) {
     
     return cylinderObject.indices.length;
     }
-    
+
 function initArrayBuffer (gl, attribute, data, num, type) {
   // Create a buffer object
   var buffer = gl.createBuffer();
@@ -527,7 +527,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
-
+  /*
   //CREATE THE CYLINDER
   var n = cylinder(gl);
   if (n < 0) {
@@ -538,7 +538,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   pushMatrix(modelMatrix);
     modelMatrix.scale(1, 1, 1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
+  modelMatrix = popMatrix();*/
 }
 
 function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
