@@ -278,13 +278,13 @@ function signStand(gl) {
 //  |/      |/
 //  v2------v3
 var vertices = new Float32Array([   // Coordinates
-    0.5, 0.5, 0.5,  -0.5, 0.5, 0.5,  -0.5,-0.5, 0.5,   0.5,-0.5, 0.5, // v0-v1-v2-v3 front
-    0.5, 0.5, 0.5,   0.5,-0.5, 0.5,   0.5,-0.5,-0.5,   0.5, 1.5,-0.5, // v0-v3-v4-v5 right
-    0.5, 0.5, 0.5,   0.5, 1.5,-0.5,  -0.5, 1.5,-0.5,  -0.5, 0.5, 0.5, // v0-v5-v6-v1 up
-    -0.5, 0.5, 0.5,  -0.5, 1.5,-0.5,  -0.5,-0.5,-0.5,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
-    -0.5,-0.5,-0.5,   0.5,-0.5,-0.5,   0.5,-0.5, 0.5,  -0.5,-0.5, 0.5, // v7-v4-v3-v2 down
-    0.5,-0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5, 1.5,-0.5,   0.5, 1.5,-0.5  // v4-v7-v6-v5 back
-]);
+    0.5, 0.5, 0.5,  -0.5, 1.1, 0.5,  -0.5,-1.5, 0.5,   0.5,-1.5, 0.5, // v0-v1-v2-v3 front
+    0.5, 0.5, 0.5,   0.5,-1.5, 0.5,   0.5,-1.5,-0.5,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
+    0.5, 0.5, 0.5,   0.5, 0.5,-0.5,  -0.5, 1.1,-0.5,  -0.5, 1.1, 0.5, // v0-v5-v6-v1 up
+   -0.5, 1.1, 0.5,  -0.5, 1.1,-0.5,  -0.5,-1.5,-0.5,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
+   -0.5,-1.5,-0.5,   0.5,-1.5,-0.5,   0.5,-1.5, 0.5,  -0.5,-1.5, 0.5, // v7-v4-v3-v2 down
+    0.5,-1.5,-0.5,  -0.5,-1.5,-0.5,  -0.5, 1.1,-0.5,   0.5, 0.5,-0.5  // v4-v7-v6-v5 back
+ ]);
 
 
 var colors = new Float32Array([    // Colors
@@ -458,8 +458,14 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   }
 
   pushMatrix(modelMatrix);
-    modelMatrix.translate(0, -2, 0);
-    modelMatrix.scale(0.4, 0.3, 0.3); // Scale
+    modelMatrix.translate(2, -1.7, -2);
+    modelMatrix.scale(0.1, 0.2, 0.1); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(2, -1.7, -2.4);
+    modelMatrix.scale(0.1, 0.2, 0.1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
@@ -491,8 +497,8 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   }
 
   pushMatrix(modelMatrix);
-    modelMatrix.translate(0, -2, 0);
-    modelMatrix.scale(0.4, 0.3, 0.3); // Scale
+    modelMatrix.translate(-1.85, -1.5, -2.8);
+    modelMatrix.scale(2, 1, 0.05); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 }
