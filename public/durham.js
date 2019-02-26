@@ -153,11 +153,11 @@ function greyCube(gl) {
 
   var colors = new Float32Array([    // Colors
     0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  // v0-v1-v2-v3 front 
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v3-v4-v5 right
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v5-v6-v1 up
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v1-v6-v7-v2 left
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v7-v4-v3-v2 down
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0　    // v4-v7-v6-v5 back
+    0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,     // v0-v3-v4-v5 right
+    0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,     // v0-v5-v6-v1 up
+    0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,    // v1-v6-v7-v2 left
+    0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,    // v7-v4-v3-v2 down
+    0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824　    // v4-v7-v6-v5 back
  ]);
 
 
@@ -445,6 +445,11 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 
   gl.uniform1i(u_isLighting, true); // Will apply lighting
 
+    // Rotate, and then translate
+    modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
+    modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+    modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+
   // CREATE THE SIGN STAND
   var n = signStand(gl);
   if (n < 0) {
@@ -452,16 +457,14 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
     return;
   }
 
-  // Rotate, and then translate
-  modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
-  modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
-  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-
   pushMatrix(modelMatrix);
-    modelMatrix.translate(-2, 1.25, -0.75);  // Translation
+    modelMatrix.translate(0, -2, 0);
     modelMatrix.scale(0.4, 0.3, 0.3); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
+
+
+
 
   // CREATE THE BASE
   var n = greenCube(gl);
@@ -470,14 +473,15 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
     return;
   }
 
-  modelMatrix.setTranslate(0, -2, 0);  // Translation (No translation is supported here)
-  modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
-  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-
   pushMatrix(modelMatrix);
+    modelMatrix.translate(0, -2, 0);
     modelMatrix.scale(6, 0.05, 6); // Scale
+    
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
+
+
+
 
   // CREATING ALL THE WALLS
   var n = greyCube(gl);
@@ -486,13 +490,8 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
     return;
   }
 
-  // Rotate, and then translate
-  modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
-  modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
-  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-
-
   pushMatrix(modelMatrix);
+    modelMatrix.translate(0, -2, 0);
     modelMatrix.scale(0.4, 0.3, 0.3); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
