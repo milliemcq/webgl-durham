@@ -11,9 +11,9 @@ var VSHADER_SOURCE =
   'uniform mat4 u_ProjMatrix;\n' +
   'uniform vec3 u_LightColor;\n' +     // Light color
   'uniform vec3 u_LightDirection;\n' + // Light direction (in the world coordinate, normalized)
+  'uniform bool u_isLighting;\n' +
   'varying vec4 v_Color;\n' +
   'varying vec2 v_TexCoords;\n' +
-  'uniform bool u_isLighting;\n' +
   'void main() {\n' +
   '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * vec4(a_Position, 1.0);\n' +
   '  v_TexCoords = a_TexCoords;\n' +
@@ -36,6 +36,8 @@ var FSHADER_SOURCE =
   '#ifdef GL_ES\n' +
   'precision mediump float;\n' +
   '#endif\n' +
+  'uniform bool u_UseTextures;\n' + 
+  'uniform  highp vec3 u_LightColor;\n' + 
   'varying vec4 v_Color;\n' +
   'void main() {\n' +
   '  gl_FragColor = v_Color;\n' +
