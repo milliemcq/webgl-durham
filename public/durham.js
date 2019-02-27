@@ -152,7 +152,7 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingMo
   // Draw the scene
   draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel);
 }
-
+/*
 function buildingBuffer(gl, buildingModel) {
     
     var buildingVertices = buildingModel.meshes[0].vertices;
@@ -162,7 +162,7 @@ function buildingBuffer(gl, buildingModel) {
     if (!initArrayBuffer(gl, 'a_Position', buildingVertices, 3, gl.FLOAT)) return -1;
     //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
     if (!initArrayBuffer(gl, 'a_Normal', buildingNormals, 3, gl.FLOAT)) return -1;
-    
+    /*
     var buildingIndexBufferObject = gl.createBuffer();
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buildingIndexBufferObject);
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(buildingIndices), gl.STATIC_DRAW);
@@ -196,7 +196,7 @@ function buildingBuffer(gl, buildingModel) {
   
     return buildingIndices.length;
   }
-  
+  */
   
 
 function greyCube(gl) {
@@ -737,6 +737,31 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
 
   modelMatrix = popMatrix();
 }
+
+function loadTexAndDraw(gl, n, texture, u_Sampler, u_UseTextures) {
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+  
+    // Enable texture unit0
+    gl.activeTexture(gl.TEXTURE0);
+  
+    // Bind the texture object to the target
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+  
+    // Set the texture image
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  
+    // Assign u_Sampler to TEXTURE0
+    gl.uniform1i(u_Sampler, 0);
+  
+    // Enable texture mapping
+    gl.uniform1i(u_UseTextures, true);
+  
+    // Draw the textured cube
+    gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+  }
 
 function drawBuilding(gl, buildingModel) {
     var susanVertices = buildingModel.meshes[0].vertices;
