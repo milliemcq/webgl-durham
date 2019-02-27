@@ -16,7 +16,7 @@ var InitDemo = function () {
 							alert('Fatal error getting Susan model (see console)');
 							console.error(fsErr);
 						} else {
-							loadImage('/buildingTexture.jpg', function (imgErr, img) {
+							loadImage('/textures/buildingTexture.jpg', function (imgErr, img) {
 								if (imgErr) {
 									alert('Fatal error getting Susan texture (see console)');
 									console.error(imgErr);
@@ -37,7 +37,7 @@ var RunDemo = function (vertexShaderText, fragmentShaderText, SusanImage, SusanM
     
     console.log(SusanModel);
 
-	var canvas = document.getElementById('game-surface');
+	var canvas = document.getElementById('webgl');
 	gl = canvas.getContext('webgl');
 
 	if (!gl) {
@@ -96,6 +96,9 @@ var RunDemo = function (vertexShaderText, fragmentShaderText, SusanImage, SusanM
 	//
 	var susanVertices = SusanModel.meshes[0].vertices;
 	var susanIndices = [].concat.apply([], SusanModel.meshes[0].faces);
+
+	console.log(susanVertices.length);
+	console.log(susanIndices.length);
 	var susanNormals = SusanModel.meshes[0].normals;
 	//var susanTexCoords = SusanModel.meshes[0].texturecoords[0];
 
@@ -191,7 +194,7 @@ var RunDemo = function (vertexShaderText, fragmentShaderText, SusanImage, SusanM
 
 		//gl.bindTexture(gl.TEXTURE_2D, susanTexture);
 		//gl.activeTexture(gl.TEXTURE0);
-
+		console.log(susanIndices.length);
 		gl.drawElements(gl.TRIANGLES, susanIndices.length, gl.UNSIGNED_SHORT, 0);
 
 		requestAnimationFrame(loop);

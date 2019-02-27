@@ -1,7 +1,7 @@
 // Directional lighting demo: By Frederick Li
 // Vertex shader program
 var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
+  'attribute vec3 a_Position;\n' +
   'attribute vec4 a_Color;\n' +
   'attribute vec4 a_Normal;\n' +        // Normal
   'uniform mat4 u_ModelMatrix;\n' +
@@ -13,7 +13,7 @@ var VSHADER_SOURCE =
   'varying vec4 v_Color;\n' +
   'uniform bool u_isLighting;\n' +
   'void main() {\n' +
-  '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
+  '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * vec4(a_Position, 1.0);\n' +
   '  if(u_isLighting)\n' + 
   '  {\n' +
   '     vec3 normal = normalize((u_NormalMatrix * a_Normal).xyz);\n' +
@@ -152,22 +152,18 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingMo
   // Draw the scene
   draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel);
 }
-
+/*
 function buildingBuffer(gl, buildingModel) {
     
     var buildingVertices = buildingModel.meshes[0].vertices;
 	var buildingIndices = [].concat.apply([], buildingModel.meshes[0].faces);
-	var buildingNormals = buildingModel.meshes[0].normals;
+    var buildingNormals = buildingModel.meshes[0].normals;
 
-    var buildingPosVertexBufferObject = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, buildingPosVertexBufferObject);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buildingVertices), gl.STATIC_DRAW);
-
-	/*var susanTexCoordVertexBufferObject = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, susanTexCoordVertexBufferObject);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanTexCoords), gl.STATIC_DRAW);*/
-
-	var buildingIndexBufferObject = gl.createBuffer();
+    if (!initArrayBuffer(gl, 'a_Position', buildingVertices, 3, gl.FLOAT)) return -1;
+    //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
+    if (!initArrayBuffer(gl, 'a_Normal', buildingNormals, 3, gl.FLOAT)) return -1;
+    /*
+    var buildingIndexBufferObject = gl.createBuffer();
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buildingIndexBufferObject);
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(buildingIndices), gl.STATIC_DRAW);
 
@@ -183,10 +179,24 @@ function buildingBuffer(gl, buildingModel) {
 	);
 	gl.enableVertexAttribArray(positionAttribLocation);
   
+    var buildingPosVertexBufferObject = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, buildingPosVertexBufferObject);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buildingVertices), gl.STATIC_DRAW);
+        // Write the indices to the buffer object
+    var indexBuffer = gl.createBuffer();
+    if (!indexBuffer) {
+        console.log('Failed to create the buffer object');
+        return false;
+    }
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, buildingIndices, gl.STATIC_DRAW);
+        
 
   
     return buildingIndices.length;
   }
+  */
   
 
 function greyCube(gl) {
@@ -529,22 +539,11 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
   gl.uniform1i(u_isLighting, true); // Will apply lighting
 
     // Rotate, and then translate
-    //modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
+    modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
     modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
     modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
 
-  //CREATE THE BUILDING 
-  var n = buildingBuffer(gl, buildingModel);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.7, -2);
-    modelMatrix.scale(2, 2, 2); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
+  
 
 
   // CREATE THE SIGN STAND
@@ -615,6 +614,9 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
     modelMatrix.scale(1, 1, 1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();*/
+
+  //CREATE THE BUILDING 
+  //drawBuilding(gl, buildingModel);
 }
 
 function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
@@ -633,6 +635,85 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
 
   modelMatrix = popMatrix();
 }
+
+function drawBuilding(gl, buildingModel) {
+    var susanVertices = buildingModel.meshes[0].vertices;
+	var susanIndices = [].concat.apply([], buildingModel.meshes[0].faces);
+
+	console.log(susanVertices.length);
+	console.log(susanIndices.length);
+	var susanNormals = buildingModel.meshes[0].normals;
+	//var susanTexCoords = SusanModel.meshes[0].texturecoords[0];
+
+	var susanPosVertexBufferObject = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, susanPosVertexBufferObject);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanVertices), gl.STATIC_DRAW);
+
+	/*var susanTexCoordVertexBufferObject = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, susanTexCoordVertexBufferObject);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanTexCoords), gl.STATIC_DRAW);*/
+
+	var susanIndexBufferObject = gl.createBuffer();
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, susanIndexBufferObject);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(susanIndices), gl.STATIC_DRAW);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, susanPosVertexBufferObject);
+	var positionAttribLocation = gl.getAttribLocation(gl.program, 'a_Position');
+	gl.vertexAttribPointer(
+		positionAttribLocation, // Attribute location
+		3, // Number of elements per attribute
+		gl.FLOAT, // Type of elements
+		gl.FALSE,
+		3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+		0 // Offset from the beginning of a single vertex to this attribute
+	);
+	gl.enableVertexAttribArray(positionAttribLocation);
+
+	gl.useProgram(gl.program);
+
+	var matWorldUniformLocation = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
+	var matViewUniformLocation = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
+	var matProjUniformLocation = gl.getUniformLocation(gl.program, 'u_ProjMatrix');
+
+	var worldMatrix = new Float32Array(16);
+	var viewMatrix = new Float32Array(16);
+	var projMatrix = new Float32Array(16);
+	mat4.identity(worldMatrix);
+	mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
+	mat4.perspective(projMatrix, glMatrix.toRadian(45), 700 / 700, 0.1, 1000.0);
+
+	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
+	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+
+	var xRotationMatrix = new Float32Array(16);
+	var yRotationMatrix = new Float32Array(16);
+
+	//
+	// Main render loop
+	//
+	var identityMatrix = new Float32Array(16);
+	mat4.identity(identityMatrix);
+	var angle = 0;
+	var loop = function () {
+		angle = performance.now() / 1000 / 6 * 2 * Math.PI;
+		mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
+		mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
+		mat4.mul(worldMatrix, yRotationMatrix, xRotationMatrix);
+		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+
+		gl.clearColor(0.75, 0.85, 0.8, 1.0);
+		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+
+		//gl.bindTexture(gl.TEXTURE_2D, susanTexture);
+		//gl.activeTexture(gl.TEXTURE0);
+		console.log(susanIndices.length);
+		gl.drawElements(gl.TRIANGLES, susanIndices.length, gl.UNSIGNED_BYTE, 0);
+
+		requestAnimationFrame(loop);
+	};
+	requestAnimationFrame(loop);
+  }
 
 
 function Cylinder () {
