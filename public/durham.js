@@ -1003,11 +1003,22 @@ function Cylinder () {
         console.log('Failed to create the buffer object');
         return -1;
       }
-      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer); 
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW); 
-      var indexBuffer = gl.createBuffer(); 
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer); 
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+      
+    if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
+    //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
+    //if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
+    var indexBuffer = gl.createBuffer();
+    if (!indexBuffer) {
+        console.log('Failed to create the buffer object');
+        return false;
+    }
+    
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+    var colorLoc = gl.getAttribLocation(gl.program, "a_color");
+    gl.disableVertexAttribArray(colorLoc);
+    gl.vertexAttrib4f(colorLoc, 1, 1, 1, 1);
 
       return indices.length;
     }
