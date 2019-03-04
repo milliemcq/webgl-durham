@@ -117,7 +117,7 @@ function main(buildingModel) {
   }
 
   // Set the light color (white)
-  gl.uniform3f(u_LightColor, 0.7, 0.5, 0.5);
+  gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
   // Set the light direction (in the world coordinate)
   var lightDirection = new Vector3([0.5, 3.0, 4.0]);
   lightDirection.normalize();     // Normalize
@@ -689,6 +689,33 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
+  //CREATING THE BUILDING
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(-2.5, -1.95, -1.9);
+    modelMatrix.scale(2.5, 0.1, 4); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(-2.5, -1.9, -1.95);
+    modelMatrix.scale(2.3, 0.08, 3.9); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(-3.5, -1, -2.45);
+    modelMatrix.scale(0.08, 1.7, 3); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(-1.5, -1, -2.45);
+    modelMatrix.scale(0.08, 1.7, 3); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+
+
   //CREATING THE BENCH
   var n = brownCube(gl);
   if (n < 0) {
@@ -736,7 +763,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
   modelMatrix = popMatrix();*/
 
   //CREATE THE BUILDING 
-  //drawBuilding(gl, buildingModel);
+  
 }
 
 function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
