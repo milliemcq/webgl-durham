@@ -849,7 +849,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
-  // CREATING ALL THE WALLS
+  // CREATING THE ROOF
   var n = buildingRoofBuffers(gl);
   if (n < 0) {
     console.log('Failed to set the vertex information');
@@ -885,6 +885,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
+  /*
   var n = sphere(gl);
   if (n < 0) {
     console.log('Failed to set the vertex information');
