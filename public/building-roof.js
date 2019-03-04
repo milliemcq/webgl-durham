@@ -143,11 +143,11 @@ function initVertexBuffers(gl) {
   //  v2------v3
   var vertices = new Float32Array([   // Coordinates
      0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5,-0.5, 0.5,   0.5,-0.5, 0.5, // v0-v1-v2-v3 front
-     0.5, 0.5,-0.5,   0.5,-0.5, 0.5,   0.5, -0.05,-0.5,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
+     0.5, 0.5,-0.5,   0.5,-0.5, 0.5,   0.5, -0.3,-0.3,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
      0.5, 0.5,-0.5,   0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, 0.5,-0.5, // v0-v5-v6-v1 up
-    -0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, -0.05,-0.5,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
-    -0.5, -0.05,-0.5,   0.5, -0.05,-0.5,   0.5,-0.5, 0.5,  -0.5,-0.5, 0.5, // v7-v4-v3-v2 down
-     0.5, -0.05,-0.5,  -0.5, -0.05,-0.5,  -0.5, 0.5,-0.5,   0.5, 0.5,-0.5  // v4-v7-v6-v5 back
+    -0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, -0.3,-0.3,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
+    -0.5, -0.3,-0.3,  0.5, -0.3,-0.3,    0.5,-0.5, 0.5,  -0.5,-0.5, 0.5, // v7-v4-v3-v2 down
+     0.5, -0.3,-0.3,   -0.5, -0.3,-0.3,  -0.5, 0.5,-0.5,   0.5, 0.5,-0.5  // v4-v7-v6-v5 back
   ]);
 
 
@@ -323,7 +323,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 
   // Model the chair seat
   pushMatrix(modelMatrix);
-    modelMatrix.scale(1, 1, 1); // Scale
+    modelMatrix.scale(5, 3, 3); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
