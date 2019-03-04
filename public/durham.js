@@ -737,6 +737,13 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
+  //back wall
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(-2.5, -0.8, -3.95);
+    modelMatrix.scale(2.09, 2.1, 0.1); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
 
 
   //CREATING THE BENCH
