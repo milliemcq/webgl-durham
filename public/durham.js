@@ -477,6 +477,65 @@ gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 return indices.length;
 }
 
+function buildingRoofBuffers(gl) {
+  var vertices = new Float32Array([   // Coordinates
+    0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5,-0.5, 0.5,   0.5,-0.5, 0.5, // v0-v1-v2-v3 front
+    0.5, 0.5,-0.5,   0.5,-0.5, 0.5,   0.5, -0.05,-0.5,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
+    0.5, 0.5,-0.5,   0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, 0.5,-0.5, // v0-v5-v6-v1 up
+   -0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, -0.05,-0.5,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
+   -0.5, -0.05,-0.5,   0.5, -0.05,-0.5,   0.5,-0.5, 0.5,  -0.5,-0.5, 0.5, // v7-v4-v3-v2 down
+    0.5, -0.05,-0.5,  -0.5, -0.05,-0.5,  -0.5, 0.5,-0.5,   0.5, 0.5,-0.5  // v4-v7-v6-v5 back
+ ]);
+
+
+  var colors = new Float32Array([    // Colors
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v1-v2-v3 front
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v3-v4-v5 right
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v5-v6-v1 up
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v1-v6-v7-v2 left
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v7-v4-v3-v2 down
+    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0　    // v4-v7-v6-v5 back
+ ]);
+
+
+  var normals = new Float32Array([    // Normal
+    0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
+    1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,  // v0-v3-v4-v5 right
+    0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,  // v0-v5-v6-v1 up
+   -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  // v1-v6-v7-v2 left
+    0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,  // v7-v4-v3-v2 down
+    0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // v4-v7-v6-v5 back
+  ]);
+
+
+  // Indices of the vertices
+  var indices = new Uint8Array([
+     0, 1, 2,   0, 2, 3,    // front
+     4, 5, 6,   4, 6, 7,    // right
+     8, 9,10,   8,10,11,    // up
+    12,13,14,  12,14,15,    // left
+    16,17,18,  16,18,19,    // down
+    20,21,22,  20,22,23     // back
+ ]);
+
+
+  // Write the vertex property to buffers (coordinates, colors and normals)
+  if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
+
+  // Write the indices to the buffer object
+  var indexBuffer = gl.createBuffer();
+  if (!indexBuffer) {
+    console.log('Failed to create the buffer object');
+    return false;
+  }
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+  return indices.length;
+}
 function cylinder(gl) {
     
     cylinderObject = Cylinder();
@@ -486,9 +545,9 @@ function cylinder(gl) {
     // Write the vertex property to buffers (coordinates, colors and normals)
     if (!initArrayBuffer(gl, 'a_Position', cylinderObject.vertices, 3, gl.FLOAT)) return -1;
     if (!initArrayBuffer(gl, 'a_Normal', cylinderObject.normals, 3, gl.FLOAT)) return -1;
-    var colorLocation = gl.getUniformLocation(gl.program, "v_Color");
-    gl.disableVertexAttribArray(colorLocation);
-    gl.vertexAttrib4f(colorLocation, 1, 1, 1, 0);
+    //var colorLocation = gl.getUniformLocation(gl.program, "v_Color");
+    //gl.disableVertexAttribArray(colorLocation);
+    //gl.vertexAttrib4f(colorLocation, 1, 1, 1, 0);
     // Write the indices to the buffer object
     var indexBuffer = gl.createBuffer();
     if (!indexBuffer) {
@@ -790,7 +849,18 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
+  // CREATING ALL THE WALLS
+  var n = buildingRoofBuffers(gl);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
 
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(0, 0, 0);
+    modelMatrix.scale(1, 1, 1); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
 
 
 
@@ -1121,9 +1191,9 @@ function Cylinder () {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-    var colorLoc = gl.getAttribLocation(gl.program, "a_color");
-    gl.disableVertexAttribArray(colorLoc);
-    gl.vertexAttrib4f(colorLoc, 1, 1, 1, 1);
+    //var colorLoc = gl.getAttribLocation(gl.program, "a_color");
+    //gl.disableVertexAttribArray(colorLoc);
+    //gl.vertexAttrib4f(colorLoc, 1, 1, 1, 1);
 
       return indices.length;
     }
