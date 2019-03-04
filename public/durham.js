@@ -858,6 +858,10 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
 
   pushMatrix(modelMatrix);
     modelMatrix.translate(0, 0, 0);
+    modelMatrix.rotate(180,1,0,0);
+    //modelMatrix.rotate(-5,1,0,1);
+    modelMatrix.rotate(45,0,0,1);
+    modelMatrix.rotate(90,0,1,0);
     modelMatrix.scale(1, 1, 1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
@@ -873,14 +877,13 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
 
   pushMatrix(modelMatrix);
     modelMatrix.translate(2, -1.7, 3);
-    modelMatrix.rotate(90,1,0,0);
     modelMatrix.scale(1, 0.2, 0.05); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
   pushMatrix(modelMatrix);
     modelMatrix.translate(2, -1.5, 3.2);
-    //modelMatrix.rotate(90,1,0,0);
+    modelMatrix.rotate(90,1,0,0);
     modelMatrix.scale(1, 0.2, 0.05); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
