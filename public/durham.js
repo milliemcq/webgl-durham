@@ -158,51 +158,6 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingMo
   // Draw the scene
   draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel);
 }
-/*
-function buildingBuffer(gl, buildingModel) {
-    
-    var buildingVertices = buildingModel.meshes[0].vertices;
-	var buildingIndices = [].concat.apply([], buildingModel.meshes[0].faces);
-    var buildingNormals = buildingModel.meshes[0].normals;
-
-    if (!initArrayBuffer(gl, 'a_Position', buildingVertices, 3, gl.FLOAT)) return -1;
-    //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
-    if (!initArrayBuffer(gl, 'a_Normal', buildingNormals, 3, gl.FLOAT)) return -1;
-    /*
-    var buildingIndexBufferObject = gl.createBuffer();
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buildingIndexBufferObject);
-	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(buildingIndices), gl.STATIC_DRAW);
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, buildingPosVertexBufferObject);
-	var positionAttribLocation = gl.getAttribLocation(gl.program, 'a_Position');
-	gl.vertexAttribPointer(
-		positionAttribLocation, // Attribute location
-		3, // Number of elements per attribute
-		gl.FLOAT, // Type of elements
-		gl.FALSE,
-		3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-		0 // Offset from the beginning of a single vertex to this attribute
-	);
-	gl.enableVertexAttribArray(positionAttribLocation);
-  
-    var buildingPosVertexBufferObject = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, buildingPosVertexBufferObject);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buildingVertices), gl.STATIC_DRAW);
-        // Write the indices to the buffer object
-    var indexBuffer = gl.createBuffer();
-    if (!indexBuffer) {
-        console.log('Failed to create the buffer object');
-        return false;
-    }
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, buildingIndices, gl.STATIC_DRAW);
-        
-
-  
-    return buildingIndices.length;
-  }
-  */
   
 
 function greyCube(gl) {
@@ -543,20 +498,20 @@ function cylinder(gl) {
     console.log(cylinderObject);
 
     // Write the vertex property to buffers (coordinates, colors and normals)
-    if (!initArrayBuffer(gl, 'a_Position', cylinderObject.vertices, 3, gl.FLOAT)) return -1;
-    if (!initArrayBuffer(gl, 'a_Normal', cylinderObject.normals, 3, gl.FLOAT)) return -1;
+    if (!initCylinderArrayBuffer(gl, 'a_Position', cylinderObject.vertices, 3, gl.FLOAT)) return -1;
+    if (!initCylinderArrayBuffer(gl, 'a_Normal', cylinderObject.normals, 3, gl.FLOAT)) return -1;
     //var colorLocation = gl.getUniformLocation(gl.program, "v_Color");
     //gl.disableVertexAttribArray(colorLocation);
     //gl.vertexAttrib4f(colorLocation, 1, 1, 1, 0);
     // Write the indices to the buffer object
-    var indexBuffer = gl.createBuffer();
-    if (!indexBuffer) {
+    var cylinderIndexBuffer = gl.createBuffer();
+    if (!cylinderIndexBuffer) {
         console.log('Failed to create the buffer object');
         return false;
     }
     
   
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cylinderIndexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, cylinderObject.indices, gl.STATIC_DRAW);
 
     //var colorLoc = gl.getAttribLocation(gl.program, "a_color");
@@ -575,6 +530,31 @@ function initArrayBuffer (gl, attribute, data, num, type) {
   }
   // Write date into the buffer object
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+  // Assign the buffer object to the attribute variable
+  var a_attribute = gl.getAttribLocation(gl.program, attribute);
+  if (a_attribute < 0) {
+    console.log('Failed to get the storage location of ' + attribute);
+    return false;
+  }
+  gl.vertexAttribPointer(a_attribute, num, type, false, 0, 0);
+  // Enable the assignment of the buffer object to the attribute variable
+  gl.enableVertexAttribArray(a_attribute);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+  return true;
+}
+
+function initCylinderArrayBuffer (gl, attribute, data, num, type) {
+  // Create a buffer object
+  var cylinderBuffer = gl.createBuffer();
+  if (!cylinderBuffer) {
+    console.log('Failed to create the buffer object');
+    return false;
+  }
+  // Write date into the buffer object
+  gl.bindBuffer(gl.ARRAY_BUFFER, cylinderBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
   // Assign the buffer object to the attribute variable
   var a_attribute = gl.getAttribLocation(gl.program, attribute);
@@ -915,7 +895,8 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
   }
 
   pushMatrix(modelMatrix);
-    modelMatrix.scale(1, 1, 1); // Scale
+    modelMatrix.translate(0.0, 0.0, 0.0);
+    //modelMatrix.scale(1, 1, 1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
@@ -964,86 +945,6 @@ function loadTexAndDraw(gl, n, texture, u_Sampler, u_UseTextures) {
     // Draw the textured cube
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
   }
-
-function drawBuilding(gl, buildingModel) {
-    var susanVertices = buildingModel.meshes[0].vertices;
-	var susanIndices = [].concat.apply([], buildingModel.meshes[0].faces);
-
-	console.log(susanVertices.length);
-	console.log(susanIndices.length);
-	var susanNormals = buildingModel.meshes[0].normals;
-	//var susanTexCoords = SusanModel.meshes[0].texturecoords[0];
-
-	var susanPosVertexBufferObject = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, susanPosVertexBufferObject);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanVertices), gl.STATIC_DRAW);
-
-	/*var susanTexCoordVertexBufferObject = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, susanTexCoordVertexBufferObject);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanTexCoords), gl.STATIC_DRAW);*/
-
-	var susanIndexBufferObject = gl.createBuffer();
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, susanIndexBufferObject);
-	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(susanIndices), gl.STATIC_DRAW);
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, susanPosVertexBufferObject);
-	var positionAttribLocation = gl.getAttribLocation(gl.program, 'a_Position');
-	gl.vertexAttribPointer(
-		positionAttribLocation, // Attribute location
-		3, // Number of elements per attribute
-		gl.FLOAT, // Type of elements
-		gl.FALSE,
-		3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-		0 // Offset from the beginning of a single vertex to this attribute
-	);
-	gl.enableVertexAttribArray(positionAttribLocation);
-
-	gl.useProgram(gl.program);
-
-	var matWorldUniformLocation = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
-	var matViewUniformLocation = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
-	var matProjUniformLocation = gl.getUniformLocation(gl.program, 'u_ProjMatrix');
-
-	var worldMatrix = new Float32Array(16);
-	var viewMatrix = new Float32Array(16);
-	var projMatrix = new Float32Array(16);
-	mat4.identity(worldMatrix);
-	mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
-	mat4.perspective(projMatrix, glMatrix.toRadian(45), 700 / 700, 0.1, 1000.0);
-
-	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
-	gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
-	gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
-
-	var xRotationMatrix = new Float32Array(16);
-	var yRotationMatrix = new Float32Array(16);
-
-	//
-	// Main render loop
-	//
-	var identityMatrix = new Float32Array(16);
-	mat4.identity(identityMatrix);
-	var angle = 0;
-	var loop = function () {
-		angle = performance.now() / 1000 / 6 * 2 * Math.PI;
-		mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
-		mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
-		mat4.mul(worldMatrix, yRotationMatrix, xRotationMatrix);
-		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
-
-		gl.clearColor(0.75, 0.85, 0.8, 1.0);
-		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-
-		//gl.bindTexture(gl.TEXTURE_2D, susanTexture);
-		//gl.activeTexture(gl.TEXTURE0);
-		console.log(susanIndices.length);
-		gl.drawElements(gl.TRIANGLES, susanIndices.length, gl.UNSIGNED_BYTE, 0);
-
-		requestAnimationFrame(loop);
-	};
-	requestAnimationFrame(loop);
-  }
-
 
 function Cylinder () {
     var sides = 20;
