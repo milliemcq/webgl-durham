@@ -558,6 +558,10 @@ function cylinder(gl) {
   
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, cylinderObject.indices, gl.STATIC_DRAW);
+
+    //var colorLoc = gl.getAttribLocation(gl.program, "a_color");
+    //d.disableVertexAttribArray(colorLoc);
+    //gl.vertexAttrib4f(colorLoc, 1, 1, 1, 1);
     
     return cylinderObject.indices.length;
     }
@@ -763,7 +767,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
 
   //left wall
   pushMatrix(modelMatrix);
-    modelMatrix.translate(-3.5, -0.8, -2.45);
+    modelMatrix.translate(-3.5, -0.9, -2.45);
     modelMatrix.scale(0.08, 2.1, 3); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
@@ -777,7 +781,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
 
   //right wall
   pushMatrix(modelMatrix);
-    modelMatrix.translate(-1.5, 0, -2.45);
+    modelMatrix.translate(-1.5, -0.1, -2.45);
     modelMatrix.scale(0.08, 0.5, 3); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
@@ -857,7 +861,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
   }
 
   pushMatrix(modelMatrix);
-    modelMatrix.translate(-2.5, 0.2, -2.1);
+    modelMatrix.translate(-2.5, 0.1, -2.1);
     modelMatrix.rotate(180,1,0,0);
     //modelMatrix.rotate(-5,1,0,1);
     modelMatrix.rotate(45,0,0,1);
@@ -900,9 +904,9 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
     modelMatrix.translate(0, 0, 0);
     modelMatrix.scale(1, 1, 1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
+  modelMatrix = popMatrix();*/
 
-  /*
+  
   //CREATE THE CYLINDER
   var n = cylinder(gl);
   if (n < 0) {
@@ -913,7 +917,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
   pushMatrix(modelMatrix);
     modelMatrix.scale(1, 1, 1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();*/
+  modelMatrix = popMatrix();
 
   //CREATE THE BUILDING 
   
@@ -1132,6 +1136,10 @@ function Cylinder () {
       var normal = normalize(cross(sub(a, b), sub(a, c)));
       normals = normals.concat(normal, normal, normal);
     }
+
+    console.log(vertices)
+    console.log(indices)
+    console.log(normals)
   
     return {
       vertices: vertices,
@@ -1196,9 +1204,11 @@ function Cylinder () {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-    //var colorLoc = gl.getAttribLocation(gl.program, "a_color");
-    //gl.disableVertexAttribArray(colorLoc);
-    //gl.vertexAttrib4f(colorLoc, 1, 1, 1, 1);
+    var colorLoc = gl.getAttribLocation(gl.program, "a_color");
+    gl.disableVertexAttribArray(colorLoc);
+    gl.vertexAttrib4f(colorLoc, 1, 1, 1, 1);
+
+    
 
       return indices.length;
     }
