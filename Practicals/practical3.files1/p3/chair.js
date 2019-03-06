@@ -98,7 +98,7 @@ function main() {
     console.log('Failed to get the storage location for texture map enable flag');
     return;
   }
-  
+
   // Set the light color (white)
   gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
   // Set the light direction (in the world coordinate)
@@ -117,6 +117,12 @@ function main() {
   document.onkeydown = function(ev){
     keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
   };
+
+  var Cubetexture = gl.createTexture();   // Create a texture object
+  if (!Cubetexture) {
+    console.log('Failed to create the texture object');
+    return false;
+  }
 
   draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
 }
