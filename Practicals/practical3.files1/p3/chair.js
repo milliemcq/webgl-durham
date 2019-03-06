@@ -384,8 +384,15 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   modelMatrix = popMatrix();
 }
 
-function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
+function drawbox(gl, u_Sampler, texture, u_UseTextures,  u_ModelMatrix, u_NormalMatrix, n) {
   pushMatrix(modelMatrix);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+
+    // Enable texture unit0
+    gl.activeTexture(gl.TEXTURE0);
+
+    // Bind the texture object to the target
+    gl.bindTexture(gl.TEXTURE_2D, texture);
 
     // Pass the model matrix to the uniform variable
     gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
