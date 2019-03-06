@@ -398,8 +398,16 @@ function drawbox(gl, u_Sampler, texture, u_UseTextures,  u_ModelMatrix, u_Normal
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
     // Pass the model matrix to the uniform variable
     gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+
+    // Assign u_Sampler to TEXTURE0
+    gl.uniform1i(u_Sampler, 0);
+
+  // Enable texture mapping
+    gl.uniform1i(u_UseTextures, true);
 
     // Calculate the normal transformation matrix and pass it to u_NormalMatrix
     g_normalMatrix.setInverseOf(modelMatrix);
