@@ -35,6 +35,8 @@ var FSHADER_SOURCE =
   'precision mediump float;\n' +
   '#endif\n' +
   'uniform bool u_UseTextures;\n' +    // Texture enable/disable flag
+  'uniform sampler2D u_Sampler;\n' +
+  'varying vec2 v_TexCoords;\n' +
   'varying vec4 v_Color;\n' +
   'void main() {\n' +
   '  gl_FragColor = v_Color;\n' +
