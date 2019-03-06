@@ -93,6 +93,12 @@ function main() {
     return;
   }
 
+  var u_UseTextures = gl.getUniformLocation(gl.program, "u_UseTextures");
+  if (!u_UseTextures) { 
+    console.log('Failed to get the storage location for texture map enable flag');
+    return;
+  }
+  
   // Set the light color (white)
   gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
   // Set the light direction (in the world coordinate)
@@ -205,7 +211,7 @@ function initVertexBuffers(gl) {
 
   //unbind the buffer object
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
-  
+
   // Write the indices to the buffer object
   var indexBuffer = gl.createBuffer();
   if (!indexBuffer) {
@@ -369,4 +375,29 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
   modelMatrix = popMatrix();
+}
+
+function loadTexAndDraw(gl, n, texture, u_Sampler, u_UseTextures) {
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+
+  // Enable texture unit0
+  gl.activeTexture(gl.TEXTURE0);
+
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture image
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // Assign u_Sampler to TEXTURE0
+  gl.uniform1i(u_Sampler, 0);
+
+  // Enable texture mapping
+  gl.uniform1i(u_UseTextures, true);
+
+  // Draw the textured cube
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
