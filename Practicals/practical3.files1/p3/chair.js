@@ -139,10 +139,10 @@ function main() {
 
   // Tell the browser to load an image
   // Register the event handler to be called on loading an image
-  Cubetexture.image.onload = function(){};
+  Cubetexture.image.onload = function(){draw(gl, Cubetexture, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);};
   Cubetexture.image.src = '/resources/sky.jpg';
 
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  
 }
 
 function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
