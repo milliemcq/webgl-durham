@@ -886,7 +886,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();*/
 
-  
+  /*
   //CREATE THE CYLINDER
   var n = cylinder(gl);
   if (n < 0) {
@@ -900,7 +900,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
-  //CREATE THE BUILDING 
+  //CREATE THE BUILDING */
   
 }
 
@@ -1105,9 +1105,9 @@ function Cylinder () {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-    var colorLoc = gl.getAttribLocation(gl.program, "a_color");
-    gl.disableVertexAttribArray(colorLoc);
-    gl.vertexAttrib4f(colorLoc, 1, 1, 1, 1);
+    //var colorLoc = gl.getAttribLocation(gl.program, "a_color");
+    //gl.disableVertexAttribArray(colorLoc);
+    //gl.vertexAttrib4f(colorLoc, 1, 1, 1, 1);
 
     
 

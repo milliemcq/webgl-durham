@@ -55,7 +55,7 @@ var FSHADER_SOURCE =
   '}\n';
 
 
-function main() {
+function InitDemo() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
 
@@ -155,7 +155,7 @@ function main() {
   // Tell the browser to load an image
   // Register the event handler to be called on loading an image
   Cubetexture.image.onload = function(){ loadTexAndDraw(gl, n, Cubetexture, u_Sampler, u_UseTextures); };
-  Cubetexture.image.src = '../resources/sky.jpg';
+  Cubetexture.image.src = '/resources/sky.jpg';
 
 }
 
