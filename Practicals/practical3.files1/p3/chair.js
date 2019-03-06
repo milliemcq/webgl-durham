@@ -124,6 +124,24 @@ function main() {
     return false;
   }
 
+  // Get the storage location of u_Sampler
+  var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
+  if (!u_Sampler) {
+    console.log('Failed to get the storage location of u_Sampler');
+    return false;
+  }
+
+  Cubetexture.image = new Image();  // Create the image object
+  if (!Cubetexture.image) {
+    console.log('Failed to create the image object');
+    return false;
+  }
+
+  // Tell the browser to load an image
+  // Register the event handler to be called on loading an image
+  Cubetexture.image.onload = function(){};
+  Cubetexture.image.src = '/resources/sky.jpg';
+
   draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
 }
 
