@@ -39,7 +39,7 @@ var FSHADER_SOURCE =
   'varying vec2 v_TexCoords;\n' +
   'varying vec4 v_Color;\n' +
   'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
+  '  gl_FragColor = texture2D(u_Sampler, v_TexCoord);\n' +
   '}\n';
 
 var modelMatrix = new Matrix4(); // The model matrix
