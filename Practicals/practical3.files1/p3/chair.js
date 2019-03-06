@@ -394,6 +394,10 @@ function drawbox(gl, u_Sampler, texture, u_UseTextures,  u_ModelMatrix, u_Normal
     // Bind the texture object to the target
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
+    // Set the texture image
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
     // Pass the model matrix to the uniform variable
     gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
 
