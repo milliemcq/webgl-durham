@@ -5,7 +5,7 @@ var VSHADER_SOURCE =
   'attribute vec4 a_Color;\n' +
   'attribute vec4 a_Normal;\n' +
   'attribute vec2 a_TexCoords;\n' +
-  'uniform mat4 u_MvpMatrix;\n' +
+  'uniform mat4 u_ProjMatrix;\n' +
   'uniform mat4 u_ModelMatrix;\n' +    // Model matrix
   'uniform mat4 u_NormalMatrix;\n' +   // Transformation matrix of the normal
   'varying vec4 v_Color;\n' +
@@ -44,12 +44,6 @@ var FSHADER_SOURCE =
   '  float nDotL = max(dot(lightDirection, normal), 0.0);\n' +
      // Calculate the final color from diffuse reflection and ambient reflection
   '  vec3 diffuse;\n' +
-  '  if (u_UseTextures) {\n' +
-  '     vec4 TexColor = texture2D(u_Sampler, v_TexCoords);\n' +
-  '     diffuse = u_LightColor * TexColor.rgb * nDotL * 1.2;\n' +
-  '  } else {\n' +
-  '     diffuse = u_LightColor * v_Color.rgb * nDotL;\n' +
-  '  }\n' +
   '  vec3 ambient = u_AmbientLight * v_Color.rgb;\n' +
   '  gl_FragColor = vec4(diffuse + ambient, v_Color.a);\n' +
   '}\n';

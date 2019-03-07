@@ -3,31 +3,22 @@
 var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' +
   'attribute vec4 a_Color;\n' +
-  'attribute vec4 a_Normal;\n' +        // Normal
-  'attribute vec2 a_TexCoord;\n' +
-  'varying vec2 v_TexCoord;\n' +
-  'uniform mat4 u_ModelMatrix;\n' +
-  'uniform mat4 u_NormalMatrix;\n' +
-  'uniform mat4 u_ViewMatrix;\n' +
+  'attribute vec4 a_Normal;\n' +
+  'attribute vec2 a_TexCoords;\n' +
   'uniform mat4 u_ProjMatrix;\n' +
-  'uniform vec3 u_LightColor;\n' +     // Light color
-  'uniform vec3 u_LightDirection;\n' + // Light direction (in the world coordinate, normalized)
+  'uniform mat4 u_ModelMatrix;\n' +    // Model matrix
+  'uniform mat4 u_NormalMatrix;\n' +   // Transformation matrix of the normal
   'varying vec4 v_Color;\n' +
-  'uniform bool u_isLighting;\n' +
+  'varying vec3 v_Normal;\n' +
+  'varying vec2 v_TexCoords;\n' +
+  'varying vec3 v_Position;\n' +
   'void main() {\n' +
-  'v_TexCoord = a_TexCoord;\n' +
   '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
-  '  if(u_isLighting)\n' + 
-  '  {\n' +
-  '     vec3 normal = normalize((u_NormalMatrix * a_Normal).xyz);\n' +
-  '     float nDotL = max(dot(normal, u_LightDirection), 0.0);\n' +
-        // Calculate the color due to diffuse reflection
-  '     vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;\n' +
-  '     v_Color = vec4(diffuse, a_Color.a);\n' +  '  }\n' +
-  '  else\n' +
-  '  {\n' +
-  '     v_Color = a_Color;\n' +
-  '  }\n' + 
+     // Calculate the vertex position in the world coordinate
+  '  v_Position = vec3(u_ModelMatrix * a_Position);\n' +
+  '  v_Normal = normalize(vec3(u_NormalMatrix * a_Normal));\n' +
+  '  v_Color = a_Color;\n' + 
+  '  v_TexCoords = a_TexCoords;\n' +
   '}\n';
 
 // Fragment shader program
@@ -35,12 +26,28 @@ var FSHADER_SOURCE =
   '#ifdef GL_ES\n' +
   'precision mediump float;\n' +
   '#endif\n' +
+  'uniform bool u_UseTextures;\n' +    // Texture enable/disable flag
+  'uniform vec3 u_LightColor;\n' +     // Light color
+  'uniform vec3 u_LightPosition;\n' +  // Position of the light source
+  'uniform vec3 u_AmbientLight;\n' +   // Ambient light color
+  'varying vec3 v_Normal;\n' +
+  'varying vec3 v_Position;\n' +
   'varying vec4 v_Color;\n' +
-  'varying vec2 v_TexCoord;\n' +
   'uniform sampler2D u_Sampler;\n' +
+  'varying vec2 v_TexCoords;\n' +
   'void main() {\n' +
-  '  gl_FragColor = texture2D(u_Sampler, v_TexCoord);\n' +
+     // Normalize the normal because it is interpolated and not 1.0 in length any more
+  '  vec3 normal = normalize(v_Normal);\n' +
+     // Calculate the light direction and make its length 1.
+  '  vec3 lightDirection = normalize(u_LightPosition - v_Position);\n' +
+     // The dot product of the light direction and the orientation of a surface (the normal)
+  '  float nDotL = max(dot(lightDirection, normal), 0.0);\n' +
+     // Calculate the final color from diffuse reflection and ambient reflection
+  '  vec3 diffuse;\n' +
+  '  vec3 ambient = u_AmbientLight * v_Color.rgb;\n' +
+  '  gl_FragColor = vec4(diffuse + ambient, v_Color.a);\n' +
   '}\n';
+
 
 var modelMatrix = new Matrix4(); // The model matrix
 var viewMatrix = new Matrix4();  // The view matrix
@@ -362,6 +369,23 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   // Draw x and y axes
   gl.drawArrays(gl.LINES, 0, n);*/
 
+  //INITIALISE THE TEXTURES HERE
+  var FloorTexture = gl.createTexture()
+  if(!FloorTexture)
+  {
+    ...
+  }
+
+  FloorTexture.image = new Image()
+  if(...)
+  {
+    ...
+  }
+
+  FloorTexture.image.onload = function() {
+    ...
+  }
+
   gl.uniform1i(u_isLighting, true); // Will apply lighting
 
   // Set the vertex coordinates and color (for the cube)
@@ -391,6 +415,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   */
 }
 
+//HERE HAS CHANGED
 function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
   pushMatrix(modelMatrix);
 
@@ -401,6 +426,26 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
     g_normalMatrix.setInverseOf(modelMatrix);
     g_normalMatrix.transpose();
     gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
+
+    gl.activeTexture(gl.TEXTURE0);
+
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture image
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // Assign u_Sampler to TEXTURE0
+  gl.uniform1i(u_Sampler, 0);
+
+  // Enable texture mapping
+  gl.uniform1i(u_UseTextures, true);
+
+  // Draw the textured cube
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
     // Draw the cube
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
