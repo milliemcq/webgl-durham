@@ -69,25 +69,6 @@ var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
 
-/*
-var InitDemo = function () {
-    loadJSONResource('/building.json', function (modelErr, modelObj) {
-        if (modelErr) {
-            alert('Fatal error getting Susan model (see console)');
-            console.error(fsErr);
-        } else {
-            loadImage('/textures/buildingTexture.jpg', function (imgErr, img) {
-                if (imgErr) {
-                    alert('Fatal error getting Susan texture (see console)');
-                    console.error(imgErr);
-                } else { 
-                    main(modelObj);
-                }
-            });
-        }
-    });
-};*/
-	
 var main = function () {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
@@ -310,16 +291,16 @@ function greenCube(gl) {
       20,21,22,  20,22,23     // back
    ]);
   
-  
+   console.log("Inside green cube")
     // Write the vertex property to buffers (coordinates, colors and normals)
     if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
     if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
     if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
-    if (!initArrayBuffer(gl, 'a_TexCoords', texCoords, 2)) return -1;
+    if (!initArrayBuffer(gl, 'a_TexCoords', texCoords, 2, gl.FLOAT)) return -1;
   
     // Unbind the buffer object
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
-    
+
     // Write the indices to the buffer object
     var indexBuffer = gl.createBuffer();
     if (!indexBuffer) {
@@ -684,11 +665,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
   }
 
    // Get the storage location of u_Sampler
-   var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
-   if (!u_Sampler) {
-     console.log('Failed to get the storage location of u_Sampler');
-     return false;
-   }
+   
 
   // Calculate the view matrix and the projection matrix
   modelMatrix.setTranslate(0, 0, 0);  // No Translation
@@ -735,20 +712,29 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
     return false;
   }
 
-  GrassTexture.image = new Image()
+  var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
+   if (!u_Sampler) {
+     console.log('Failed to get the storage location of u_Sampler');
+     return false;
+   }
+
+  GrassTexture.image = new Image();
   if(!GrassTexture.image)
   {
     console.log('Failed to create the image object');
     return false;
   }
 
+  console.log(GrassTexture);
+  
   GrassTexture.image.onload = function() {
+      console.log("Inside onload");
       var n = greenCube(gl);
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
       }
-
+      console.log(n);
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, -2, 0);
         modelMatrix.scale(8, 0.05, 8); 
@@ -756,7 +742,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
       modelMatrix = popMatrix();
   }
 
-   GrassTexture.image.src = '../resources/sky.jpg';
+  GrassTexture.image.src = '/textures/grass.jpg';
 
  
 
@@ -986,7 +972,8 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
 
 function drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler, u_UseTextures) {
   pushMatrix(modelMatrix);
-
+    console.log(texture);
+    console.log("Inside Draw Textures")
     // Pass the model matrix to the uniform variable
     gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
 
