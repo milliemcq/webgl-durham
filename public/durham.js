@@ -148,16 +148,20 @@ var main = function () {
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
   gl.uniformMatrix4fv(u_ProjMatrix, false, projMatrix.elements);
 
-
+  var u_UseTextures = gl.getUniformLocation(gl.program, "u_UseTextures");
+  if (!u_UseTextures) { 
+    console.log('Failed to get the storage location for texture map enable flag');
+    return;
+  }
 
   document.onkeydown = function(ev){
-    keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel);
+    keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
   };
 
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
 }
 
-function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
+function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
   switch (ev.keyCode) {
     case 40: // Up arrow key -> the positive rotation of arm1 around the y-axis
       g_xAngle = (g_xAngle + ANGLE_STEP) % 360;
@@ -175,7 +179,7 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingMo
   }
 
   // Draw the scene
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
 }
   
 
@@ -649,12 +653,13 @@ function popMatrix() { // Retrieve the matrix from the array
   return g_matrixStack.pop();
 }
 
-function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
+function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
 
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  gl.uniform1i(u_isLighting, false); // Will not apply lighting
+  gl.uniform1i(u_isLighting, true); // Will not apply lighting
+  gl.uniform1i(u_UseTextures, false);
 
   // Set the vertex coordinates and color (for the x, y axes)
 
@@ -663,6 +668,13 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
     console.log('Failed to set the vertex information');
     return;
   }
+
+   // Get the storage location of u_Sampler
+   var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
+   if (!u_Sampler) {
+     console.log('Failed to get the storage location of u_Sampler');
+     return false;
+   }
 
   // Calculate the view matrix and the projection matrix
   modelMatrix.setTranslate(0, 0, 0);  // No Translation
@@ -702,20 +714,37 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
   modelMatrix = popMatrix();
 
 
-
-
-  // CREATE THE BASE
-  var n = greenCube(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
+  var GrassTexture = gl.createTexture()
+  if(!GrassTexture)
+  {
+    console.log('Failed to create the texture object');
+    return false;
   }
 
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(0, -2, 0);
-    modelMatrix.scale(8, 0.05, 8); 
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
+  GrassTexture.image = new Image()
+  if(!GrassTexture.image)
+  {
+    console.log('Failed to create the image object');
+    return false;
+  }
+
+  GrassTexture.image.onload = function() {
+      var n = greenCube(gl);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0, -2, 0);
+        modelMatrix.scale(8, 0.05, 8); 
+        drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures)
+      modelMatrix = popMatrix();
+  }
+
+   GrassTexture.image.src = '../resources/sky.jpg';
+
+ 
 
   // CREATING ALL THE WALLS
   var n = greyCube(gl);
@@ -923,7 +952,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
   
 }
 
-/*
+
 function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
   pushMatrix(modelMatrix);
 
@@ -939,9 +968,9 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
   modelMatrix = popMatrix();
-}*/
+}
 
-function drawboxWithTrxtures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler, u_UseTextures) {
+function drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler, u_UseTextures) {
   pushMatrix(modelMatrix);
 
     // Pass the model matrix to the uniform variable
