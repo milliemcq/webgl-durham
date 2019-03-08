@@ -923,6 +923,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, buildingModel) {
   
 }
 
+/*
 function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
   pushMatrix(modelMatrix);
 
@@ -938,197 +939,42 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
   modelMatrix = popMatrix();
-}
+}*/
 
-function loadTexAndDraw(gl, n, texture, u_Sampler, u_UseTextures) {
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
-  
-    // Enable texture unit0
+function drawboxWithTrxtures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler, u_UseTextures) {
+  pushMatrix(modelMatrix);
+
+    // Pass the model matrix to the uniform variable
+    gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+
+    // Calculate the normal transformation matrix and pass it to u_NormalMatrix
+    g_normalMatrix.setInverseOf(modelMatrix);
+    g_normalMatrix.transpose();
+    gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
+
     gl.activeTexture(gl.TEXTURE0);
-  
+
     // Bind the texture object to the target
     gl.bindTexture(gl.TEXTURE_2D, texture);
-  
+
     // Set the texture image
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  
+
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  
+
     // Assign u_Sampler to TEXTURE0
     gl.uniform1i(u_Sampler, 0);
-  
+
     // Enable texture mapping
     gl.uniform1i(u_UseTextures, true);
-  
+
     // Draw the textured cube
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
-  }
 
-function Cylinder () {
-    var sides = 20;
-    var height = 1.0;
-    var stepTheta = 2 * Math.PI / sides;
-    var verticesPerCap = 9 * sides;
-  
-    var vertices = [];
-    var theta = 0;
-    var i = 0;
-  
-    // Top Cap
-    for (; i < verticesPerCap; i += 9) {
-      vertices[i    ] = Math.cos(theta);
-      vertices[i + 1] = height;
-      vertices[i + 2] = Math.sin(theta);
-      theta += stepTheta;
-  
-      vertices[i + 3] = 0.0;
-      vertices[i + 4] = height;
-      vertices[i + 5] = 0.0;
-  
-      vertices[i + 6] = Math.cos(theta);
-      vertices[i + 7] = height;
-      vertices[i + 8] = Math.sin(theta);
-    }
-  
-    // Bottom Cap
-    theta = 0;
-    for (; i < verticesPerCap + verticesPerCap; i += 9) {
-      vertices[i + 6] = Math.cos(theta);
-      vertices[i + 7] = -height;
-      vertices[i + 8] = Math.sin(theta);
-      theta += stepTheta;
-  
-      vertices[i + 3] = 0.0;
-      vertices[i + 4] = -height;
-      vertices[i + 5] = 0.0;
-  
-      vertices[i    ] = Math.cos(theta);
-      vertices[i + 1] = -height;
-      vertices[i + 2] = Math.sin(theta);
-    }
-  
-    for (var j = 0; j < sides; ++j) {
-      for (var k = 0; k < 3; ++k, ++i) {
-        vertices[i] = vertices[0 + k + 9 * j];
-      }
-      for (var k = 0; k < 3; ++k, ++i) {
-        vertices[i] = vertices[6 + k + 9 * j];
-      }
-      for (var k = 0; k < 3; ++k, ++i) {
-        vertices[i] = vertices[verticesPerCap + k + 9 * j];
-      }
-  
-      for (var k = 0; k < 3; ++k, ++i) {
-        vertices[i] = vertices[0 + k + 9 * j];
-      }
-      for (var k = 0; k < 3; ++k, ++i) {
-        vertices[i] = vertices[verticesPerCap + k + 9 * j];
-      }
-      for (var k = 0; k < 3; ++k, ++i) {
-        vertices[i] = vertices[verticesPerCap + 6 + k + 9 * j];
-      }
-    }
-  
-  
-    var indices = new Array(vertices.length / 3);
-    for (i = 0; i < indices.length; ++i) indices[i] = i;
-  
-    function sub (a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; };
-    function cross (a, b) {
-      return [
-        a[1] * b[2] - a[2] * b[1],
-        a[2] * b[0] - a[0] * b[2],
-        a[0] * b[1] - a[1] * b[0]
-      ];
-    };
-    function normalize (a) {
-      var length = a[0] * a[0] + a[1] * a[1] + a[2] * a[2];
-      return [a[0] / length, a[1] / length, a[2] / length];
-    };
-  
-    var normals = [];
-  
-    for (var i = 0; i < vertices.length; i += 9) {
-      var a = [vertices[i    ], vertices[i + 1], vertices[i + 2]];
-      var b = [vertices[i + 3], vertices[i + 4], vertices[i + 5]];
-      var c = [vertices[i + 6], vertices[i + 7], vertices[i + 8]]
-      var normal = normalize(cross(sub(a, b), sub(a, c)));
-      normals = normals.concat(normal, normal, normal);
-    }
+    // Draw the cube
+    gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
-    console.log(vertices)
-    console.log(indices)
-    console.log(normals)
-  
-    return {
-      vertices: vertices,
-      indices: indices,
-      normals: normals,
-    };
-  };
+  modelMatrix = popMatrix();
+}
 
-  function sphere(gl)
-    {
-      var SPHERE_DIV = 6;
-      var i, ai, si, ci;
-      var j, aj, sj, cj;
-      var p1, p2;
-      var vertices = [],indices = [];
-      for (j = 0; j <= SPHERE_DIV; j++) 
-      {
-        aj = j * Math.PI / SPHERE_DIV;
-        sj = Math.sin(aj);
-        cj = Math.cos(aj);
-        for (i = 0; i <= SPHERE_DIV; i++) 
-        {
-          ai = i * 2 * Math.PI / SPHERE_DIV;
-          si = Math.sin(ai);
-          ci = Math.cos(ai);
-          vertices.push(si * sj);  // X
-          vertices.push(cj);       // Y
-          vertices.push(ci * sj);  // Z
-        }
-      }
-
-      for (j = 0; j < SPHERE_DIV; j++)
-      {
-        for (i = 0; i < SPHERE_DIV; i++)
-        {
-          p1 = j * (SPHERE_DIV+1) + i;
-          p2 = p1 + (SPHERE_DIV+1);
-          indices.push(p1);
-          indices.push(p2);
-          indices.push(p1 + 1);
-          indices.push(p1 + 1);
-          indices.push(p2);
-          indices.push(p2 + 1);
-        }
-      }
-      var vertexBuffer = gl.createBuffer();
-      if (!vertexBuffer) 
-      {
-        console.log('Failed to create the buffer object');
-        return -1;
-      }
-      
-    if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
-    //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
-    //if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
-    var indexBuffer = gl.createBuffer();
-    if (!indexBuffer) {
-        console.log('Failed to create the buffer object');
-        return false;
-    }
-    
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-
-    //var colorLoc = gl.getAttribLocation(gl.program, "a_color");
-    //gl.disableVertexAttribArray(colorLoc);
-    //gl.vertexAttrib4f(colorLoc, 1, 1, 1, 1);
-
-    
-
-      return indices.length;
-    }
