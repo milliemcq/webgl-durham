@@ -58,7 +58,7 @@ var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
 
-var InitDemo = function () {
+
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
 

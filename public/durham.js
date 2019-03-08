@@ -1,21 +1,27 @@
 // Directional lighting demo: By Frederick Li
 // Vertex shader program
 var VSHADER_SOURCE =
-  'attribute vec3 a_Position;\n' +
+  'attribute vec4 a_Position;\n' +
   'attribute vec4 a_Color;\n' +
-  'attribute vec4 a_Normal;\n' +        // Normal
+  'attribute vec4 a_Normal;\n' +
   'attribute vec2 a_TexCoords;\n' +
-  'uniform mat4 u_ModelMatrix;\n' +
-  'uniform mat4 u_NormalMatrix;\n' +
-  'uniform mat4 u_ViewMatrix;\n' +
   'uniform mat4 u_ProjMatrix;\n' +
+  'uniform mat4 u_ViewMatrix;\n' +
+  'uniform mat4 u_ModelMatrix;\n' +    // Model matrix
+  'uniform mat4 u_NormalMatrix;\n' +   // Transformation matrix of the normal
   'uniform vec3 u_LightColor;\n' +     // Light color
   'uniform vec3 u_LightDirection;\n' + // Light direction (in the world coordinate, normalized)
-  'uniform bool u_isLighting;\n' +
   'varying vec4 v_Color;\n' +
+  'varying vec3 v_Normal;\n' +
   'varying vec2 v_TexCoords;\n' +
+  'varying vec3 v_Position;\n' +
+  'uniform bool u_isLighting;\n' +
   'void main() {\n' +
-  '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * vec4(a_Position, 1.0);\n' +
+  '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
+     // Calculate the vertex position in the world coordinate
+  '  v_Position = vec3(u_ModelMatrix * a_Position);\n' +
+  '  v_Normal = normalize(vec3(u_NormalMatrix * a_Normal));\n' +
+  '  v_Color = a_Color;\n' + 
   '  v_TexCoords = a_TexCoords;\n' +
   '  if(u_isLighting)\n' + 
   '  {\n' +
@@ -36,13 +42,21 @@ var FSHADER_SOURCE =
   '#ifdef GL_ES\n' +
   'precision mediump float;\n' +
   '#endif\n' +
-  'uniform bool u_UseTextures;\n' + 
-  'uniform  highp vec3 u_LightColor;\n' + 
+  'uniform bool u_UseTextures;\n' +    // Texture enable/disable flag    // Light color
+  'uniform vec3 u_LightPosition;\n' +  // Position of the light source
+  'uniform vec3 u_AmbientLight;\n' +   // Ambient light color
+  'varying vec3 v_Normal;\n' +
+  'varying vec3 v_Position;\n' +
   'varying vec4 v_Color;\n' +
+  'uniform sampler2D u_Sampler;\n' +
+  'varying vec2 v_TexCoords;\n' +
   'void main() {\n' +
+  'if (u_UseTextures) {\n' +
+  '     gl_FragColor = texture2D(u_Sampler, v_TexCoords);\n' +
+  '  } else {\n' +
   '  gl_FragColor = v_Color;\n' +
+  '  }\n' +
   '}\n';
-
 
 var buildingModel;
 
@@ -55,6 +69,7 @@ var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
 
+/*
 var InitDemo = function () {
     loadJSONResource('/building.json', function (modelErr, modelObj) {
         if (modelErr) {
@@ -71,12 +86,12 @@ var InitDemo = function () {
             });
         }
     });
-};
+};*/
 	
-function main(buildingModel) {
+var main = function () {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
-  console.log(buildingModel);
+  //console.log(buildingModel);
   
   // Get the rendering context for WebGL
   var gl = getWebGLContext(canvas);
@@ -98,6 +113,9 @@ function main(buildingModel) {
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+   
+  
+  
   // Get the storage locations of uniform attributes
   var u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
   var u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
@@ -129,6 +147,7 @@ function main(buildingModel) {
   // Pass the model, view, and projection matrix to the uniform variable respectively
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
   gl.uniformMatrix4fv(u_ProjMatrix, false, projMatrix.elements);
+
 
 
   document.onkeydown = function(ev){
