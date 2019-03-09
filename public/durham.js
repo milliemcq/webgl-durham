@@ -213,11 +213,25 @@ function greyCube(gl) {
     20,21,22,  20,22,23     // back
  ]);
 
+ // Texture Coordinates
+ var texCoords = new Float32Array([
+  1.0, 1.0,    0.0, 1.0,   0.0, 0.0,   1.0, 0.0,  // v0-v1-v2-v3 front
+  0.0, 1.0,    0.0, 0.0,   1.0, 0.0,   1.0, 1.0,  // v0-v3-v4-v5 right
+  1.0, 0.0,    1.0, 1.0,   0.0, 1.0,   0.0, 0.0,  // v0-v5-v6-v1 up
+  1.0, 1.0,    0.0, 1.0,   0.0, 0.0,   1.0, 0.0,  // v1-v6-v7-v2 left
+  0.0, 0.0,    1.0, 0.0,   1.0, 1.0,   0.0, 1.0,  // v7-v4-v3-v2 down
+  0.0, 0.0,    1.0, 0.0,   1.0, 1.0,   0.0, 1.0   // v4-v7-v6-v5 back
+]);
+
 
   // Write the vertex property to buffers (coordinates, colors and normals)
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
   if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
   if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_TexCoords', texCoords, 2, gl.FLOAT)) return -1;
+  
+    // Unbind the buffer object
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
   // Write the indices to the buffer object
   var indexBuffer = gl.createBuffer();
@@ -1209,7 +1223,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, -2, 0);
         modelMatrix.scale(8, 0.05, 8); 
-        drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures)
+        drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, false)
       modelMatrix = popMatrix();
   }
 
@@ -1223,11 +1237,11 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
     return false;
   }
 
-  var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
+  /*var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
    if (!u_Sampler) {
      console.log('Failed to get the storage location of u_Sampler');
      return false;
-   }
+   }*/
 
   wallTexture.image = new Image();
   if(!wallTexture.image)
@@ -1246,19 +1260,19 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
     pushMatrix(modelMatrix);
       modelMatrix.translate(-3, -1.5, -3.95);
       modelMatrix.scale(2, 1, 0.1); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     pushMatrix(modelMatrix);
       modelMatrix.translate(-1.5, -1.6, -3.95);
       modelMatrix.scale(2, 0.8, 0.1); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     pushMatrix(modelMatrix);
       modelMatrix.translate(-0.2, -1.75, -3.95);
       modelMatrix.scale(0.7, 0.5, 0.1); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //This is the sign
@@ -1267,108 +1281,108 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix.rotate(45,0,0,1);
       modelMatrix.rotate(90,0,1,0);
       modelMatrix.scale(0.7, 0.5, 0.05); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //CREATING THE BUILDING
     pushMatrix(modelMatrix);
       modelMatrix.translate(-2.5, -1.95, -1.9);
       modelMatrix.scale(2.5, 0.1, 4); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     pushMatrix(modelMatrix);
       modelMatrix.translate(-2.5, -1.9, -1.95);
       modelMatrix.scale(2.3, 0.08, 3.9); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //left wall
     pushMatrix(modelMatrix);
       modelMatrix.translate(-3.5, -0.9, -2.45);
       modelMatrix.scale(0.08, 2.1, 3); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //right wall
     pushMatrix(modelMatrix);
       modelMatrix.translate(-1.5, -1.5, -2.45);
       modelMatrix.scale(0.08, 1, 3); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //right wall
     pushMatrix(modelMatrix);
       modelMatrix.translate(-1.5, -0.1, -2.45);
       modelMatrix.scale(0.08, 0.5, 3); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //right wall
     pushMatrix(modelMatrix);
       modelMatrix.translate(-1.5, -0.5, -3.45);
       modelMatrix.scale(0.08, 1, 1); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //right wall
     pushMatrix(modelMatrix);
       modelMatrix.translate(-1.5, -0.5, -1.45);
       modelMatrix.scale(0.08, 1, 1); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //back wall
     pushMatrix(modelMatrix);
       modelMatrix.translate(-2.5, -0.8, -3.95);
       modelMatrix.scale(2.09, 2.1, 0.1); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //front left wall
     pushMatrix(modelMatrix);
       modelMatrix.translate(-3.44, -0.8, -0.91);
       modelMatrix.scale(0.2, 2.1, 0.08); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     pushMatrix(modelMatrix);
       modelMatrix.translate(-2.9, -0.8, -0.91);
       modelMatrix.scale(0.2, 2.1, 0.08); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     pushMatrix(modelMatrix);
       modelMatrix.translate(-2.1, -0.8, -0.91);
       modelMatrix.scale(0.2, 2.1, 0.08); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     pushMatrix(modelMatrix);
       modelMatrix.translate(-1.56, -0.8, -0.91);
       modelMatrix.scale(0.2, 2.1, 0.08); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //top front
     pushMatrix(modelMatrix);
       modelMatrix.translate(-2.5, -0.05, -0.91);
       modelMatrix.scale(2.09, 0.6, 0.08); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //bottom left front
     pushMatrix(modelMatrix);
       modelMatrix.translate(-3.1, -1.5, -0.91);
       modelMatrix.scale(0.5, 0.7, 0.08); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //bottom right front
     pushMatrix(modelMatrix);
       modelMatrix.translate(-1.9, -1.5, -0.91);
       modelMatrix.scale(0.5, 0.7, 0.08); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     // CREATING THE ROOF
@@ -1381,11 +1395,10 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
     pushMatrix(modelMatrix);
       modelMatrix.translate(-2.5, 0.1, -2.1);
       modelMatrix.rotate(180,1,0,0);
-      //modelMatrix.rotate(-5,1,0,1);
       modelMatrix.rotate(45,0,0,1);
       modelMatrix.rotate(90,0,1,0);
       modelMatrix.scale(4, 1.8, 1.8); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures)
+      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   }
 
@@ -1490,7 +1503,7 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
   modelMatrix = popMatrix();
 }
 
-function drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler, u_UseTextures) {
+function drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler, u_UseTextures, clamp) {
   pushMatrix(modelMatrix);
     console.log(texture);
     console.log("Inside Draw Textures")
@@ -1503,6 +1516,13 @@ function drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sa
     gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
 
     gl.activeTexture(gl.TEXTURE0);
+
+    if(clamp){
+      //gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      //gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);  
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    }
 
     // Bind the texture object to the target
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -1518,6 +1538,7 @@ function drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sa
 
     // Enable texture mapping
     gl.uniform1i(u_UseTextures, true);
+    
 
     // Draw the textured cube
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
