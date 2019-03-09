@@ -1132,10 +1132,31 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
   }
 
   pushMatrix(modelMatrix);
-    modelMatrix.translate(0.0, 0.0, 0.0);
+    modelMatrix.translate(-2, -0.9, -0.4);
     
     modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(1, 1, 1); // Scale
+    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(-1.6, -0.9, -0.4);
+    modelMatrix.rotate(90,1,0,0);
+    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(-3, -0.9, -0.4);
+    modelMatrix.rotate(90,1,0,0);
+    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(-3.4, -0.9, -0.4);
+    modelMatrix.rotate(90,1,0,0);
+    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
