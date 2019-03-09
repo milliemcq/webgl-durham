@@ -136,13 +136,13 @@ var main = function () {
   }
 
   document.onkeydown = function(ev){
-    keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
+    keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, u_LightColor);
   };
 
   draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
 }
 
-function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
+function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, u_LightColor) {
   switch (ev.keyCode) {
     case 40: // Up arrow key -> the positive rotation of arm1 around the y-axis
       g_xAngle = (g_xAngle + ANGLE_STEP) % 360;
@@ -156,6 +156,10 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextu
     case 37: // Left arrow key -> the negative rotation of arm1 around the y-axis
       g_yAngle = (g_yAngle - ANGLE_STEP) % 360;
       break;
+    case 32:
+      gl.uniform3f(u_LightColor, 0.8, 0.4, 0.0);
+      gl.clearColor( 1, 0.6, 0.5, 1.0);
+
     default: return; // Skip drawing at no effective action
   }
 
@@ -525,6 +529,7 @@ function buildingRoofBuffers(gl) {
 }
 
 
+
 function initCylinderArrayBuffer (gl) {
   var vertices = new Float32Array([
     0, 1, -1, 0, 1, 1, 0.19509, 0.980785, 1
@@ -779,6 +784,8 @@ function initArrayBuffer (gl, attribute, data, num, type) {
 
   return true;
 }
+
+
 
 
 function initAxesVertexBuffers(gl) {
@@ -1127,7 +1134,20 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
-  //CREATE THE BUILDING */
+  /*CREATE THE BIRD
+  var n = initBirdBuffer(gl);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(0,0,0);
+    
+    modelMatrix.rotate(90,1,0,0);
+    modelMatrix.scale(0.01, 0.01, 0.01); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();*/
   
 }
 
