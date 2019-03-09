@@ -403,7 +403,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   // Model the chair seat
   pushMatrix(modelMatrix);
     modelMatrix.scale(5, 0.1, 5); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+    drawBoxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
   // Model the chair back
@@ -416,7 +416,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 }
 
 //HERE HAS CHANGED
-function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
+function drawBoxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n) {
   pushMatrix(modelMatrix);
 
     // Pass the model matrix to the uniform variable
