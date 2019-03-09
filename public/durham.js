@@ -291,7 +291,7 @@ function greenCube(gl) {
       20,21,22,  20,22,23     // back
    ]);
   
-   console.log("Inside green cube")
+    //console.log("Inside green cube")
     // Write the vertex property to buffers (coordinates, colors and normals)
     if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
     if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
@@ -718,8 +718,8 @@ function initCylinderArrayBuffer (gl) {
     191,188,189,  189, 190, 191
  ]);
  
- console.log(vertices.length)
- console.log(normals.length)
+ //console.log(vertices.length)
+ //console.log(normals.length)
  
   // Write the vertex property to buffers (coordinates, colors and normals)
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
@@ -1133,6 +1133,8 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
 
   pushMatrix(modelMatrix);
     modelMatrix.translate(0.0, 0.0, 0.0);
+    
+    modelMatrix.rotate(90,1,0,0);
     modelMatrix.scale(1, 1, 1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
