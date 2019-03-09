@@ -139,7 +139,7 @@ var main = function () {
     keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
   };
 
-  drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
 }
 
 function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
@@ -160,7 +160,7 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextu
   }
 
   // Draw the scene
-  drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
 }
   
 
@@ -896,11 +896,9 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
     console.log('Failed to set the vertex information');
     return;
   }
-  console.log(n);
   pushMatrix(modelMatrix);
     modelMatrix.translate(0, -2, 0);
     modelMatrix.scale(8, 0.05, 8); 
-    //drawbox(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures)
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
@@ -1266,13 +1264,13 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
     pushMatrix(modelMatrix);
       modelMatrix.translate(-1.5, -1.6, -3.95);
       modelMatrix.scale(2, 0.8, 0.1); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
+      drawbox(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     pushMatrix(modelMatrix);
       modelMatrix.translate(-0.2, -1.75, -3.95);
       modelMatrix.scale(0.7, 0.5, 0.1); // Scale
-      drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
+      drawbox(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
   
     //This is the sign
@@ -1384,7 +1382,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix.scale(0.5, 0.7, 0.08); // Scale
       drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
-  
+    /*
     // CREATING THE ROOF
     var n = buildingRoofBuffers(gl);
     if (n < 0) {
@@ -1399,7 +1397,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix.rotate(90,0,1,0);
       modelMatrix.scale(4, 1.8, 1.8); // Scale
       drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
-    modelMatrix = popMatrix();
+    modelMatrix = popMatrix();*/
   }
 
   wallTexture.image.src = '/textures/brick.jpg';
@@ -1520,9 +1518,9 @@ function drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sa
     if(clamp){
       //gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       //gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);  
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+     
     }
+    
 
     // Bind the texture object to the target
     gl.bindTexture(gl.TEXTURE_2D, texture);
