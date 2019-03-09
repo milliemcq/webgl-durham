@@ -882,7 +882,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
-
+  /*
   var GrassTexture = gl.createTexture()
   if(!GrassTexture)
   {
@@ -920,9 +920,20 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
       modelMatrix = popMatrix();
   }
 
-  GrassTexture.image.src = '/textures/grass.jpg';
+  GrassTexture.image.src = '/textures/grass.jpg';*/
 
- 
+  var n = greenCube(gl);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+  console.log(n);
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(0, -2, 0);
+    modelMatrix.scale(8, 0.05, 8); 
+    //drawbox(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures)
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
 
   // CREATING ALL THE WALLS
   var n = greyCube(gl);
