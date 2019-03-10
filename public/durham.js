@@ -1433,7 +1433,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
       
       //CREATE THE CYLINDER
-      var n = initCylinderArrayBuffer(gl);
+      var n = initCylinderArrayBuffer(gl, true);
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
