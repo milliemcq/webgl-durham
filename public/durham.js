@@ -1349,34 +1349,40 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
     return false;
   }
 
-  console.log(GrassTexture);
+  //console.log(GrassTexture);
   
   GrassTexture.image.onload = function() {
+
+   
 
       // Clear color and depth buffer
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
       gl.uniform1i(u_isLighting, true); // Will not apply lighting
-      gl.uniform1i(u_UseTextures, true);
-      console.log("Inside onload");
+      gl.uniform1i(u_UseTextures, false);
+
+      modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
+      modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+      modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+
+      //console.log("Inside onload");
       var n = greenCube(gl);
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
       }
-      console.log(n);
+      //console.log(n);
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, -2, 0);
-        modelMatrix.scale(8, 0.05, 8); 
-        loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        modelMatrix.scale(8, 0.1, 8); 
+        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-      modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
-      modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
-      modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+      
   
     
-      gl.uniform1i(u_UseTextures, false);
+      //gl.uniform1i(u_UseTextures, false);
     
       // CREATE THE SIGN STAND
       var n = signStand(gl);
@@ -1665,22 +1671,25 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         return;
       }
 
+      //The stump
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2, -0.9, -0.4);
+        modelMatrix.translate(-2.5, -1.8, 2.5);
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(0.5, 0.5, 0.2); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0, -0.9, 0);
         
         modelMatrix.rotate(90,1,0,0);
-        modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+        modelMatrix.scale(0.2, 0.2, 1.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-      pushMatrix(modelMatrix);
-        modelMatrix.translate(-1.6, -0.9, -0.4);
-        modelMatrix.rotate(90,1,0,0);
-        modelMatrix.scale(0.13, 0.13, 1.1); // Scale
-        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-      modelMatrix = popMatrix();
+      
 
-      pushMatrix(modelMatrix);
+      /*pushMatrix(modelMatrix);
         modelMatrix.translate(-3, -0.9, -0.4);
         modelMatrix.rotate(90,1,0,0);
         modelMatrix.scale(0.13, 0.13, 1.1); // Scale
@@ -1692,7 +1701,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.rotate(90,1,0,0);
         modelMatrix.scale(0.13, 0.13, 1.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-      modelMatrix = popMatrix();
+      modelMatrix = popMatrix();*/
 
 
   }
@@ -1879,7 +1888,7 @@ function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler
   gl.uniform1i(u_Sampler, 0);
 
   // Enable texture mapping
-  gl.uniform1i(u_UseTextures, bool);
+  //gl.uniform1i(u_UseTextures, bool);
 
   // Draw the textured cube
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
