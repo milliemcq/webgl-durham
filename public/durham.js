@@ -530,7 +530,7 @@ function buildingRoofBuffers(gl) {
 
 
 
-function initCylinderArrayBuffer (gl) {
+function initCylinderArrayBuffer (gl, grey) {
   var vertices = new Float32Array([
     0, 1, -1, 0, 1, 1, 0.19509, 0.980785, 1
     , 0.19509, 0.980785, -1, 0.19509, 0.980785, -1, 0.19509, 0.980785, 1
@@ -583,6 +583,7 @@ function initCylinderArrayBuffer (gl) {
     0.707108, -1, -0.555569, 0.83147, -1, -0.382682, 0.92388, -1, -0.195089, 0.980786, -1
   ]);
  
+  if(grey){
   var colors = new Float32Array([    // Colors
     0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  // v0-v1-v2-v3 front 
     0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,     // v0-v3-v4-v5 right
@@ -640,6 +641,17 @@ function initCylinderArrayBuffer (gl) {
     0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,    // v7-v4-v3-v2 down
     0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,　    // v4-v7-v6-v5 back
  ]);
+}
+else{
+ var colors = new Float32Array([    // Colors
+  0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v0-v1-v2-v3 front  
+  0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v0-v3-v4-v5 right
+  0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v0-v5-v6-v1 up
+  0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v1-v6-v7-v2 left
+  0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v7-v4-v3-v2 down
+  0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v4-v7-v6-v5 back
+]);
+}
  
  
   var normals = new Float32Array([    // Normal
@@ -1099,7 +1111,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
 
   
   //CREATE THE CYLINDER
-  var n = initCylinderArrayBuffer(gl);
+  var n = initCylinderArrayBuffer(gl, true);
   if (n < 0) {
     console.log('Failed to set the vertex information');
     return;
@@ -1133,6 +1145,22 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
     modelMatrix.scale(0.13, 0.13, 1.1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
+
+  //CREATE TREE 
+  var n = initCylinderArrayBuffer(gl, false);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(-2, -0.9, -0.4);
+    
+    modelMatrix.rotate(90,1,0,0);
+    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
 
   /*CREATE THE BIRD
   var n = initBirdBuffer(gl);
