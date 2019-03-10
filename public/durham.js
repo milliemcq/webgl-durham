@@ -61,11 +61,12 @@ var FSHADER_SOURCE =
 
 
   var InitDemo = function () {
-            loadJSONResource('/models/tree.json', function (modelErr, treeModel) {
+            loadJSONResource('/models/sphere.json', function (modelErr, treeModel) {
               if (modelErr) {
                 alert('Fatal error getting tree model (see console)');
-                console.error(fsErr);
-                    main(treeModel);
+                console.error(modelErr);
+                    //main(treeModel);
+                    console.log(treeModel);
                   }
                   else{
                     main(treeModel);
@@ -155,7 +156,7 @@ var main = function (treeModel) {
     keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, u_LightColor);
   };
 
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel);
+  drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel);
 }
 
 function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, u_LightColor, treeModel) {
@@ -180,7 +181,7 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextu
   }
 
   // Draw the scene
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel);
+  drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel);
 }
   
 
@@ -547,6 +548,8 @@ function buildingRoofBuffers(gl) {
 
 
 function initCylinderArrayBuffer (gl, grey) {
+
+  
   var vertices = new Float32Array([
     0, 1, -1, 0, 1, 1, 0.19509, 0.980785, 1
     , 0.19509, 0.980785, -1, 0.19509, 0.980785, -1, 0.19509, 0.980785, 1
@@ -598,6 +601,7 @@ function initCylinderArrayBuffer (gl, grey) {
     -0.980785, 0.195091, -1, -0.923879, 0.382684, -1, -0.831469, 0.555571, -1, -0.707106,
     0.707108, -1, -0.555569, 0.83147, -1, -0.382682, 0.92388, -1, -0.195089, 0.980786, -1
   ]);
+  
  
   if(grey){
   var colors = new Float32Array([    // Colors
@@ -914,6 +918,43 @@ function initAxesVertexBuffers(gl) {
   return n;
 }
 
+function initTreeBuffer(gl, treeModel)
+{
+
+  //console.log(treeModel);
+
+   var vertices = treeModel.meshes[0].vertices;
+   var normals = treeModel.meshes[0].normals;
+   var indices = [].concat.apply([], treeModel.meshes[0].faces);
+
+
+   console.log(vertices.length);
+   console.log(indices.length);
+   console.log(normals.length);
+  // Write the vertex property to buffers (coordinates, colors and normals)
+  if (!initArrayBuffer(gl, 'a_Position', new Float32Array(vertices), 3, gl.FLOAT)) return -1;
+  //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(normals), 3, gl.FLOAT)) return -1;
+  //gl.disableVertexAttribArray('a_TexCoords');
+  gl.disableVertexAttribArray(1);
+  gl.disableVertexAttribArray(2);
+
+  // Write the indices to the buffer object
+  var indexBuffer = gl.createBuffer();
+  if (!indexBuffer) {
+    console.log('Failed to create the buffer object');
+    return false;
+  }
+ 
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), gl.STATIC_DRAW);
+
+
+
+
+   return indices.length;
+}
+
 var g_matrixStack = []; // Array for storing a matrix
 function pushMatrix(m) { // Store the specified matrix to the array
   var m2 = new Matrix4(m);
@@ -924,7 +965,7 @@ function popMatrix() { // Retrieve the matrix from the array
   return g_matrixStack.pop();
 }
 
-function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
+function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel) {
 
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -1211,8 +1252,8 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
-  //CREATE TREE 
-  var n = initCylinderArrayBuffer(gl, false);
+
+  var n = initSphereBuffers(gl);
   if (n < 0) {
     console.log('Failed to set the vertex information');
     return;
@@ -1221,8 +1262,23 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
   pushMatrix(modelMatrix);
     modelMatrix.translate(0, 0, 0);
     
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(0.2, 0.2, 3); // Scale
+    //modelMatrix.rotate(90,1,0,0);
+    modelMatrix.scale(1, 4, 4); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+  /*
+  var n = initTreeBuffer(gl, treeModel);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(0, 0, 0);
+    
+    //modelMatrix.rotate(90,1,0,0);
+    modelMatrix.scale(1, 1, 1); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
@@ -1246,15 +1302,11 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
 
 function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
 
-  // Clear color and depth buffer
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  gl.uniform1i(u_isLighting, true); // Will not apply lighting
-  gl.uniform1i(u_UseTextures, false);
+  
 
   // Set the vertex coordinates and color (for the x, y axes)
 
-  var n = initAxesVertexBuffers(gl);
+  /*var n = initAxesVertexBuffers(gl);
   if (n < 0) {
     console.log('Failed to set the vertex information');
     return;
@@ -1271,34 +1323,10 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
   // Draw x and y axes
   gl.drawArrays(gl.LINES, 0, n);
 
-  gl.uniform1i(u_isLighting, true); // Will apply lighting
+  gl.uniform1i(u_isLighting, true); // Will apply lighting*/
 
     // Rotate, and then translate
-    modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
-    modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
-    modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-
-  
-
-
-  // CREATE THE SIGN STAND
-  var n = signStand(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.7, -2);
-    modelMatrix.scale(0.1, 0.2, 0.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.7, -2.4);
-    modelMatrix.scale(0.1, 0.2, 0.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
+   
 
   
   var GrassTexture = gl.createTexture()
@@ -1324,6 +1352,12 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
   console.log(GrassTexture);
   
   GrassTexture.image.onload = function() {
+
+      // Clear color and depth buffer
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+      gl.uniform1i(u_isLighting, true); // Will not apply lighting
+      gl.uniform1i(u_UseTextures, true);
       console.log("Inside onload");
       var n = greenCube(gl);
       if (n < 0) {
@@ -1334,13 +1368,341 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, -2, 0);
         modelMatrix.scale(8, 0.05, 8); 
-        drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, false)
+        loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
       modelMatrix = popMatrix();
+
+      modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
+      modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+      modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  
+    
+      gl.uniform1i(u_UseTextures, false);
+    
+      // CREATE THE SIGN STAND
+      var n = signStand(gl);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+    
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2, -1.7, -2);
+        modelMatrix.scale(0.1, 0.2, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+    
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2, -1.7, -2.4);
+        modelMatrix.scale(0.1, 0.2, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+          //CREATING THE BENCH
+      var n = brownCube(gl);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2, -1.7, 3);
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(1, 0.2, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2, -1.5, 3.2);
+        modelMatrix.rotate(180,1,0,0);
+        modelMatrix.scale(1, 0.2, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      /*
+      var n = sphere(gl);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0, 0, 0);
+        modelMatrix.scale(1, 1, 1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();*/
+
+      
+      //CREATE THE CYLINDER
+      var n = initCylinderArrayBuffer(gl);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2, -0.9, -0.4);
+        
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.6, -0.9, -0.4);
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-3, -0.9, -0.4);
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-3.4, -0.9, -0.4);
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+        //CREATE THE BUILDING */
+        // CREATING ALL THE WALLS
+      var n = greyCube(gl);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-3, -1.5, -3.95);
+        modelMatrix.scale(2, 1, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.5, -1.6, -3.95);
+        modelMatrix.scale(2, 0.8, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-0.2, -1.75, -3.95);
+        modelMatrix.scale(0.7, 0.5, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //This is the sign
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2, -1.55, -2.2);
+        modelMatrix.rotate(45,0,0,1);
+        modelMatrix.rotate(90,0,1,0);
+        modelMatrix.scale(0.7, 0.5, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //CREATING THE BUILDING
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.5, -1.95, -1.9);
+        modelMatrix.scale(2.5, 0.1, 4); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.5, -1.9, -1.95);
+        modelMatrix.scale(2.3, 0.08, 3.9); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //left wall
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-3.5, -0.9, -2.45);
+        modelMatrix.scale(0.08, 2.1, 3); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //right wall
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.5, -1.5, -2.45);
+        modelMatrix.scale(0.08, 1, 3); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //right wall
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.5, -0.1, -2.45);
+        modelMatrix.scale(0.08, 0.5, 3); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //right wall
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.5, -0.5, -3.45);
+        modelMatrix.scale(0.08, 1, 1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //right wall
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.5, -0.5, -1.45);
+        modelMatrix.scale(0.08, 1, 1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //back wall
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.5, -0.8, -3.95);
+        modelMatrix.scale(2.09, 2.1, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //front left wall
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-3.44, -0.8, -0.91);
+        modelMatrix.scale(0.2, 2.1, 0.08); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.9, -0.8, -0.91);
+        modelMatrix.scale(0.2, 2.1, 0.08); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.1, -0.8, -0.91);
+        modelMatrix.scale(0.2, 2.1, 0.08); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.56, -0.8, -0.91);
+        modelMatrix.scale(0.2, 2.1, 0.08); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //top front
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.5, -0.05, -0.91);
+        modelMatrix.scale(2.09, 0.6, 0.08); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //bottom left front
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-3.1, -1.5, -0.91);
+        modelMatrix.scale(0.5, 0.7, 0.08); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //bottom right front
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.9, -1.5, -0.91);
+        modelMatrix.scale(0.5, 0.7, 0.08); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      // CREATING THE ROOF
+      var n = buildingRoofBuffers(gl);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.5, 0.1, -2.1);
+        modelMatrix.rotate(180,1,0,0);
+        //modelMatrix.rotate(-5,1,0,1);
+        modelMatrix.rotate(45,0,0,1);
+        modelMatrix.rotate(90,0,1,0);
+        modelMatrix.scale(4, 1.8, 1.8); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+
+
+      //CREATING THE BENCH
+      var n = brownCube(gl);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2, -1.7, 3);
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(1, 0.2, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2, -1.5, 3.2);
+        modelMatrix.rotate(180,1,0,0);
+        modelMatrix.scale(1, 0.2, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      /*
+      var n = sphere(gl);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0, 0, 0);
+        modelMatrix.scale(1, 1, 1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();*/
+
+      
+      //CREATE THE CYLINDER
+      var n = initCylinderArrayBuffer(gl, false);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2, -0.9, -0.4);
+        
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.6, -0.9, -0.4);
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-3, -0.9, -0.4);
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-3.4, -0.9, -0.4);
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+
   }
 
   GrassTexture.image.src = '/textures/grass.jpg';
 
+  gl.uniform1i(u_UseTextures, false);
   //CREATING THE WALL TEXTURE
+
+  /*
   var wallTexture = gl.createTexture()
   if(!wallTexture)
   {
@@ -1352,7 +1714,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
    if (!u_Sampler) {
      console.log('Failed to get the storage location of u_Sampler');
      return false;
-   }*/
+   }
 
   wallTexture.image = new Image();
   if(!wallTexture.image)
@@ -1495,7 +1857,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix.scale(0.5, 0.7, 0.08); // Scale
       drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
     modelMatrix = popMatrix();
-    /*
+    
     // CREATING THE ROOF
     var n = buildingRoofBuffers(gl);
     if (n < 0) {
@@ -1510,89 +1872,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix.rotate(90,0,1,0);
       modelMatrix.scale(4, 1.8, 1.8); // Scale
       drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, wallTexture, u_Sampler, u_UseTextures, true)
-    modelMatrix = popMatrix();*/
+    modelMatrix = popMatrix();
   }
 
-  wallTexture.image.src = '/textures/brick.jpg';
+  wallTexture.image.src = '/textures/brick.jpg';*/
 
 
   // CREATING ALL THE WALLS
   
-
-
-
-  //CREATING THE BENCH
-  var n = brownCube(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.7, 3);
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(1, 0.2, 0.05); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.5, 3.2);
-    modelMatrix.rotate(180,1,0,0);
-    modelMatrix.scale(1, 0.2, 0.05); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  /*
-  var n = sphere(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(0, 0, 0);
-    modelMatrix.scale(1, 1, 1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();*/
-
-  
-  //CREATE THE CYLINDER
-  var n = initCylinderArrayBuffer(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-2, -0.9, -0.4);
-    
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-1.6, -0.9, -0.4);
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-3, -0.9, -0.4);
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-3.4, -0.9, -0.4);
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //CREATE THE BUILDING */
   
 }
 
@@ -1608,6 +1895,7 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
     g_normalMatrix.transpose();
     gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
     //gl.disableVertexAttribArray(2);
+    
     // Draw the cube
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
@@ -1628,11 +1916,6 @@ function drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sa
 
     gl.activeTexture(gl.TEXTURE0);
 
-    if(clamp){
-      //gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      //gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-     
-    }
     
 
     // Bind the texture object to the target
@@ -1654,9 +1937,132 @@ function drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sa
     // Draw the textured cube
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
-    // Draw the cube
-    gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
-
   modelMatrix = popMatrix();
 }
+
+function initSphereBuffers(gl)
+{
+
+  let latitudeBands = 50;
+    let longitudeBands = 50;
+    let radius = 2;
+
+    let vertexPositionData = [];
+    let normalData = [];
+    let textureCoordData = [];
+    let indexData = [];
+
+    // Calculate sphere vertex positions, normals, and texture coordinates.
+    for (let latNumber = 0; latNumber <= latitudeBands; ++latNumber) {
+      let theta = latNumber * Math.PI / latitudeBands;
+      let sinTheta = Math.sin(theta);
+      let cosTheta = Math.cos(theta);
+
+      for (let longNumber = 0; longNumber <= longitudeBands; ++longNumber) {
+        let phi = longNumber * 2 * Math.PI / longitudeBands;
+        let sinPhi = Math.sin(phi);
+        let cosPhi = Math.cos(phi);
+
+        let x = cosPhi * sinTheta;
+        let y = cosTheta;
+        let z = sinPhi * sinTheta;
+
+        let u = 1 - (longNumber / longitudeBands);
+        let v = 1 - (latNumber / latitudeBands);
+
+        vertexPositionData.push(radius * x);
+        vertexPositionData.push(radius * y);
+        vertexPositionData.push(radius * z);
+
+        normalData.push(x);
+        normalData.push(y);
+        normalData.push(z);
+
+        textureCoordData.push(u);
+        textureCoordData.push(v);
+      }
+    }
+
+    // Calculate sphere indices.
+    for (let latNumber = 0; latNumber < latitudeBands; ++latNumber) {
+      for (let longNumber = 0; longNumber < longitudeBands; ++longNumber) {
+        let first = (latNumber * (longitudeBands + 1)) + longNumber;
+        let second = first + longitudeBands + 1;
+
+        indexData.push(first);
+        indexData.push(second);
+        indexData.push(first + 1);
+
+        indexData.push(second);
+        indexData.push(second + 1);
+        indexData.push(first + 1);
+      }
+    }
+
+    vertexPositionData = new Float32Array(vertexPositionData);
+    normalData = new Float32Array(normalData);
+    textureCoordData = new Float32Array(textureCoordData);
+    indexData = new Uint16Array(indexData);
+
+    // Create buffer objects.
+    let vertexPositionBuffer = gl.createBuffer();
+    let vertexNormalBuffer = gl.createBuffer();
+    let indexBuffer = gl.createBuffer();
+
+    // Write the vertex positions to their buffer object.
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertexPositionData, gl.STATIC_DRAW);
+
+    // Assign position coords to attrib and enable it.
+    let VertexPosition = gl.getAttribLocation(gl.program, 'a_Position');
+    gl.vertexAttribPointer(VertexPosition, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(VertexPosition);
+
+    // Write the normals to their buffer object.
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, normalData, gl.STATIC_DRAW);
+
+    // Assign normal to attrib and enable it.
+    let VertexNormal = gl.getAttribLocation(gl.program, 'a_Normal');
+    gl.vertexAttribPointer(VertexNormal, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(VertexNormal);
+
+    // Pass index buffer data to element array buffer.
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+
+
+    gl.disableVertexAttribArray(1);
+    gl.disableVertexAttribArray(2);
+    return indexData.length
+  
+}
+
+function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler, u_UseTextures, bool) {
+  drawbox(gl, u_ModelMatrix, u_NormalMatrix, n)
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+
+  // Enable texture unit0
+  gl.activeTexture(gl.TEXTURE0);
+
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture image
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // Assign u_Sampler to TEXTURE0
+  gl.uniform1i(u_Sampler, 0);
+
+  // Enable texture mapping
+  gl.uniform1i(u_UseTextures, bool);
+
+  // Draw the textured cube
+  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+}
+
+
 
