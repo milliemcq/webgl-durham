@@ -58,7 +58,18 @@ var FSHADER_SOURCE =
   '  }\n' +
   '}\n';
 
-var buildingModel;
+
+
+  var InitDemo = function () {
+            loadJSONResource('/models/tree.json', function (modelErr, treeModel) {
+              if (modelErr) {
+                alert('Fatal error getting tree model (see console)');
+                console.error(fsErr);
+
+                    main(treeModel);
+                  }
+                });
+              };
 
 var modelMatrix = new Matrix4(); // The model matrix
 var viewMatrix = new Matrix4();  // The view matrix
@@ -69,7 +80,10 @@ var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
 
-var main = function () {
+var main = function (treeModel) {
+
+  console.log(treeModel);
+
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
   //console.log(buildingModel);
