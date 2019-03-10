@@ -1206,7 +1206,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
     modelMatrix.translate(0, 0, 0);
     
     modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+    modelMatrix.scale(0.2, 0.2, 3); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
