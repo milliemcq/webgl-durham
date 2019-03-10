@@ -157,8 +157,8 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextu
       g_yAngle = (g_yAngle - ANGLE_STEP) % 360;
       break;
     case 32:
-      gl.uniform3f(u_LightColor, 0.8, 0.4, 0.0);
-      gl.clearColor( 1, 0.6, 0.5, 1.0);
+      gl.uniform3f(u_LightColor, 1.0, 0.9, 0.8);
+      gl.clearColor( 1.0, 0.9, 0.9, 1.0);
 
     default: return; // Skip drawing at no effective action
   }
