@@ -65,7 +65,9 @@ var FSHADER_SOURCE =
               if (modelErr) {
                 alert('Fatal error getting tree model (see console)');
                 console.error(fsErr);
-
+                    main(treeModel);
+                  }
+                  else{
                     main(treeModel);
                   }
                 });
@@ -153,10 +155,10 @@ var main = function (treeModel) {
     keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, u_LightColor);
   };
 
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel);
 }
 
-function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, u_LightColor) {
+function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, u_LightColor, treeModel) {
   switch (ev.keyCode) {
     case 40: // Up arrow key -> the positive rotation of arm1 around the y-axis
       g_xAngle = (g_xAngle + ANGLE_STEP) % 360;
@@ -178,7 +180,7 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextu
   }
 
   // Draw the scene
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel);
 }
   
 
