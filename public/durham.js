@@ -2004,7 +2004,7 @@ function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler
 		gl.UNSIGNED_BYTE,
 		texture.image
 	);
-	gl.bindTexture(gl.TEXTURE_2D, null);
+	//gl.bindTexture(gl.TEXTURE_2D, null);
 
   // Set the texture image
   //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
