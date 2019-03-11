@@ -1485,6 +1485,8 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
   
   GrassTexture.image.onload = function() {
 
+    
+
    
 
       // Clear color and depth buffer
@@ -1496,6 +1498,25 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
       modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
       modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+
+      var n = greyCube(gl);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+      gl.uniform1i(u_UseTextures, true);
+
+      //This is the sign
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2, -1.55, -2.2);
+        modelMatrix.rotate(45,0,0,1);
+        modelMatrix.rotate(90,0,1,0);
+        modelMatrix.scale(0.7, 0.5, 0.05); // Scale
+        //drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+        loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+      modelMatrix = popMatrix();
+
+      gl.uniform1i(u_UseTextures, false);
 
       //console.log("Inside onload");
       var n = greenCube(gl);
@@ -1632,14 +1653,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-      //This is the sign
-      pushMatrix(modelMatrix);
-        modelMatrix.translate(2, -1.55, -2.2);
-        modelMatrix.rotate(45,0,0,1);
-        modelMatrix.rotate(90,0,1,0);
-        modelMatrix.scale(0.7, 0.5, 0.05); // Scale
-        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-      modelMatrix = popMatrix();
+      
 
       //CREATING THE BUILDING
       pushMatrix(modelMatrix);
@@ -1905,7 +1919,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
   }
 
-  GrassTexture.image.src = '/textures/grass.jpg';
+  GrassTexture.image.src = '/textures/signTexture.png';
 
   gl.uniform1i(u_UseTextures, false);
   
@@ -1981,9 +1995,20 @@ function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler
   // Bind the texture object to the target
   gl.bindTexture(gl.TEXTURE_2D, texture);
 
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texImage2D(
+		gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
+		gl.UNSIGNED_BYTE,
+		texture.image
+	);
+	gl.bindTexture(gl.TEXTURE_2D, null);
+
   // Set the texture image
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
+  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
