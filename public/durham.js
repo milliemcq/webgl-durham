@@ -447,7 +447,7 @@ gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 return indices.length;
 }
 
-function signStand(gl) {
+function signStand(gl, grey) {
 // Create a cube
 //    v6----- v5
 //   /|      /|
@@ -466,6 +466,7 @@ var vertices = new Float32Array([   // Coordinates
  ]);
 
 
+if(!grey){
 var colors = new Float32Array([    // Colors
     0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v1-v2-v3 front
     0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v3-v4-v5 right
@@ -474,6 +475,17 @@ var colors = new Float32Array([    // Colors
     0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v7-v4-v3-v2 down
     0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,　  // v4-v7-v6-v5 back
 ]);
+}
+else{
+var colors = new Float32Array([    // Colors
+  0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  // v0-v1-v2-v3 front 
+  0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,     // v0-v3-v4-v5 right
+  0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,     // v0-v5-v6-v1 up
+  0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,    // v1-v6-v7-v2 left
+  0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,    // v7-v4-v3-v2 down
+  0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824　    // v4-v7-v6-v5 back
+]);
+}
 
 
 var normals = new Float32Array([    // Normal
@@ -1214,12 +1226,6 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, tr
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(0, 1, 0);
-    modelMatrix.scale(1, 1, 1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
 
   var n = greenCube(gl);
   if (n < 0) {
@@ -1710,7 +1716,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       //gl.uniform1i(u_UseTextures, false);
     
       // CREATE THE SIGN STAND
-      var n = signStand(gl);
+      var n = signStand(gl, false);
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
@@ -1725,6 +1731,27 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(2, -1.7, -2.4);
         modelMatrix.scale(0.1, 0.2, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      var n = signStand(gl, true);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-3.55, 0.13, -0.05);
+        modelMatrix.scale(0.2, 0.08, 0.1); // Scale
+        modelMatrix.rotate(90,0,0,1);
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.45, 0.14, -0.05);
+        modelMatrix.scale(0.2, 0.08, 0.1); // Scale
+        modelMatrix.rotate(90,0,0,1);
+        modelMatrix.rotate(180,1,0,0);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
