@@ -1679,6 +1679,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
+      //the trunk
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, -0.9, 0);
         
@@ -1688,20 +1689,68 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix = popMatrix();
 
       
-
-      /*pushMatrix(modelMatrix);
-        modelMatrix.translate(-3, -0.9, -0.4);
+      //branch1
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0.4, 0, 0);
         modelMatrix.rotate(90,1,0,0);
-        modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+        modelMatrix.rotate(-45,0,1,0);
+        modelMatrix.scale(0.1, 0.1, 0.5); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-3.4, -0.9, -0.4);
+        modelMatrix.translate(0.6, 0, 0);
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.rotate(-80,0,1,0);
+        modelMatrix.scale(0.07, 0.07, 0.3); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+
+      //branch 2
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-0.3, 0.2, 0);
+        modelMatrix.rotate(90,1,0,0);
+        modelMatrix.rotate(-150,0,1,0);
+        modelMatrix.scale(0.09, 0.09, 0.5); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-0.5, 0.5, 0.1);
+        modelMatrix.rotate(-200,1,0,0);
+        modelMatrix.rotate(-170,0,1,0);
+        modelMatrix.rotate(180,0,0,1);
+        modelMatrix.scale(0.05, 0.05, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //branch 3
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0, 0, -0.20);
+        modelMatrix.rotate(50,1,0,0);
+        modelMatrix.rotate(0,0,1,0);
+        modelMatrix.scale(0.07, 0.07, 0.5); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //branch 4
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0, 0.2, 0.3);
+        modelMatrix.rotate(130,1,0,0);
+        //modelMatrix.rotate(-170,0,1,0);
+       // modelMatrix.rotate(180,0,0,1);
+        modelMatrix.scale(0.05, 0.05, 0.3); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //second trunk
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0, -0.2, 0);
         modelMatrix.rotate(90,1,0,0);
         modelMatrix.scale(0.13, 0.13, 1.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-      modelMatrix = popMatrix();*/
+      modelMatrix = popMatrix();
 
 
   }
