@@ -1214,6 +1214,13 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, tr
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
 
+  pushMatrix(modelMatrix);
+    modelMatrix.translate(0, 1, 0);
+    modelMatrix.scale(1, 1, 1); // Scale
+    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+  modelMatrix = popMatrix();
+
+
   var n = greenCube(gl);
   if (n < 0) {
     console.log('Failed to set the vertex information');
@@ -1594,9 +1601,50 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
+      //GRASS CLUSTER STARTS HERE
       pushMatrix(modelMatrix);
-        modelMatrix.translate(0, -1.9, 0.3);
-        modelMatrix.scale(0.1, 0.2, 0.05); 
+        modelMatrix.translate(-0.15, -1.9, 0.3);
+        modelMatrix.scale(0.07, 0.15, 0.05); 
+        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-0.3, -1.9, 0.3);
+        modelMatrix.scale(0.07, 0.15, 0.05); 
+        modelMatrix.rotate(-20,0,1,0);
+        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-0.2, -1.9, 0.45);
+        modelMatrix.scale(0.07, 0.15, 0.05); 
+        modelMatrix.rotate(-20,0,1,0);
+        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //SECOND GRASS CLUSTER
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0.15, -1.9, 0.3);
+        modelMatrix.scale(0.07, 0.15, 0.05); 
+        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0.3, -1.9, 0.3);
+        modelMatrix.scale(0.07, 0.15, 0.05); 
+        modelMatrix.rotate(-20,0,1,0);
+        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0.2, -1.9, 0.45);
+        modelMatrix.scale(0.07, 0.15, 0.05); 
+        modelMatrix.rotate(-20,0,1,0);
         //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
@@ -1608,11 +1656,51 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         return;
       }
 
-      //GRASS CLUSTER
+      //GRASS CLUSTER STARTS HERE
       pushMatrix(modelMatrix);
-        modelMatrix.translate(0, -1.8, 0.3);
+        modelMatrix.translate(-0.15, -1.8, 0.3);
         modelMatrix.rotate(20,1,0,0);
-        modelMatrix.scale(0.10, 0.06, 0.05); // Scale
+        modelMatrix.scale(0.07, 0.04, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-0.3, -1.8, 0.3);
+        modelMatrix.rotate(20,1,0,0);
+        modelMatrix.rotate(-20,0,1,0);
+        modelMatrix.scale(0.07, 0.04, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-0.2, -1.8, 0.45);
+        modelMatrix.rotate(20,1,0,0);
+        modelMatrix.rotate(-20,0,1,0);
+        modelMatrix.scale(0.07, 0.04, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //SECOND GRASS CLUSTER
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0.15, -1.8, 0.3);
+        modelMatrix.rotate(20,1,0,0);
+        modelMatrix.scale(0.07, 0.04, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0.3, -1.8, 0.3);
+        modelMatrix.rotate(20,1,0,0);
+        modelMatrix.rotate(-20,0,1,0);
+        modelMatrix.scale(0.07, 0.04, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0.2, -1.8, 0.45);
+        modelMatrix.rotate(20,1,0,0);
+        modelMatrix.rotate(-20,0,1,0);
+        modelMatrix.scale(0.07, 0.04, 0.05); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1839,6 +1927,32 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.scale(0.5, 0.7, 0.08); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
+
+      //top of cylinders
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-3.4, 0.06, -0.4);
+        modelMatrix.scale(0.3, 0.08, 0.3); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-3, 0.06, -0.4);
+        modelMatrix.scale(0.3, 0.08, 0.3); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2, 0.06, -0.4);
+        modelMatrix.scale(0.3, 0.08, 0.3); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.6, 0.06, -0.4);
+        modelMatrix.scale(0.3, 0.08, 0.3); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
 
       // CREATING THE ROOF
       var n = buildingRoofBuffers(gl);
