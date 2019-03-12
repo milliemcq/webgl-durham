@@ -1679,6 +1679,30 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
+      //BENCH GRASS CLUSTER
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.85, -1.9, 2.0);
+        modelMatrix.scale(0.07, 0.15, 0.05); 
+        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.0, -1.9, 2.0);
+        modelMatrix.scale(0.07, 0.15, 0.05); 
+        modelMatrix.rotate(-20,0,1,0);
+        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-1.9, -1.9, 2.15);
+        modelMatrix.scale(0.07, 0.15, 0.05); 
+        modelMatrix.rotate(-20,0,1,0);
+        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
       
 
       //GRASS
@@ -1762,14 +1786,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
       //BENCH GRASS CLUSTER
       pushMatrix(modelMatrix);
-        modelMatrix.translate(1.85, -1.8, 2.0);
+        modelMatrix.translate(1.15, -1.8, 3.0);
         modelMatrix.rotate(20,1,0,0);
         modelMatrix.scale(0.07, 0.04, 0.05); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(2.0, -1.8, 2.0);
+        modelMatrix.translate(1.3, -1.8, 3.0);
         modelMatrix.rotate(20,1,0,0);
         modelMatrix.rotate(-20,0,1,0);
         modelMatrix.scale(0.07, 0.04, 0.05); // Scale
@@ -1777,7 +1801,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(1.9, -1.8, 2.15);
+        modelMatrix.translate(1.2, -1.8, 3.15);
         modelMatrix.rotate(20,1,0,0);
         modelMatrix.rotate(-20,0,1,0);
         modelMatrix.scale(0.07, 0.04, 0.05); // Scale
