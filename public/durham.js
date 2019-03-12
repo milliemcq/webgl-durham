@@ -165,6 +165,13 @@ var main = function (treeModel) {
     return;
   }
 
+  var tick = function() {
+    currentAngle = animate(currentAngle);  // Update the rotation angle
+    drawWithTextures(gl, n, currentAngle, modelMatrix, u_ModelMatrix);   // Draw the triangle
+    requestAnimationFrame(tick, canvas); // Request that the browser calls tick
+  };
+  tick();
+
   //console.log(u_ViewMatrix);
   document.onkeydown = function(ev){
     keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, u_LightColor, 0, u_ViewMatrix);
@@ -2278,43 +2285,6 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
   modelMatrix = popMatrix();
 }
 
-function drawboxWithTextures(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler, u_UseTextures, clamp) {
-  pushMatrix(modelMatrix);
-    //console.log(texture);
-    //console.log("Inside Draw Textures")
-    // Pass the model matrix to the uniform variable
-    gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
-
-    // Calculate the normal transformation matrix and pass it to u_NormalMatrix
-    g_normalMatrix.setInverseOf(modelMatrix);
-    g_normalMatrix.transpose();
-    gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
-
-    gl.activeTexture(gl.TEXTURE0);
-
-    
-
-    // Bind the texture object to the target
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-
-    // Set the texture image
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    // Assign u_Sampler to TEXTURE0
-    gl.uniform1i(u_Sampler, 0);
-
-    // Enable texture mapping
-    gl.uniform1i(u_UseTextures, true);
-    
-
-    // Draw the textured cube
-    gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
-
-  modelMatrix = popMatrix();
-}
 
 
 
@@ -2355,6 +2325,16 @@ function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
 
+var g_last = Date.now();
+function animate(angle) {
+  // Calculate the elapsed time
+  var now = Date.now();
+  var elapsed = now - g_last;
+  g_last = now;
+  // Update the current rotation angle (adjusted by the elapsed time)
+  var newAngle = angle + (ANGLE_STEP * elapsed) / 1000.0;
+  return newAngle %= 360;
+}
 
 
 
