@@ -2345,9 +2345,12 @@ function animateTranslate(translation) {
   var now = Date.now();
   var elapsed = now - g_last;
   g_last = now;
-  // Update the current rotation angle (adjusted by the elapsed time)
+
+
   var newTranslation = translation + (1 * elapsed) / 1000;
-  return newTranslation %= 3;
+  var result = newTranslation %= 3
+
+  return result;
 }
 
 function animateRotate(angle) {
