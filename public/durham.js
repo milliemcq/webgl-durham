@@ -151,6 +151,7 @@ var main = function (treeModel) {
   //zoom = zoom + 100;
 
   var currentTranslation = 0.0;
+  var currentAngle = 0.0;
   
   projMatrix.setPerspective(30, 800/800, 1, 100);
   // Pass the model, view, and projection matrix to the uniform variable respectively
@@ -168,8 +169,9 @@ var main = function (treeModel) {
   }
 
   var tick = function() {
-    currentTranslation = animate(currentTranslation);  // Update the rotation angle
-    currentAngle = animate(currentTranslation);  // Update the rotation angle
+    currentTranslation = animateTranslate(currentTranslation);  // Update the rotation angle
+    currentAngle = animateRotate(currentAngle);  // Update the rotation angle
+    console.log(currentAngle);
     drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel, currentTranslation, currentAngle);
     requestAnimationFrame(tick, canvas); // Request that the browser calls tick
   };
@@ -221,7 +223,7 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextu
   }
 
   // Draw the scene
-  drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel);
+  //drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel);
 }
   
 
@@ -1420,7 +1422,7 @@ function popMatrix() { // Retrieve the matrix from the array
 
 
 function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, model, currentTranslation, currentAngle) {
- console.log(currentTranslation);
+ //console.log(currentTranslation);
  var GrassTexture = gl.createTexture()
   if(!GrassTexture)
   {
@@ -2070,7 +2072,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
       //the trunk
       pushMatrix(modelMatrix);
-        modelMatrix.translate((0 + currentTranslation), -0.9, 0);
+        modelMatrix.translate((0), -0.9, 0);
         
         modelMatrix.rotate(90,1,0,0);
         modelMatrix.scale(0.2, 0.2, 1.1); // Scale
@@ -2179,17 +2181,32 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
+      console.log(currentAngle)
       //WING 1
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.57, -1.38, 2.625);
-        modelMatrix.scale(0.10, 0.03, 0.1); // Scale
+        //modelMatrix.rotate(currentAngle,1,0,0);
+        modelMatrix.translate(-2.565, -1.41, 2.625);
+        modelMatrix.rotate(20-currentAngle,1,0,0);
+        modelMatrix.scale(0.10, 0.03, 0.13); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-      //WING 1
+      //WING 2
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.57, -1.38, 2.38);
-        modelMatrix.scale(0.10, 0.03, 0.1); // Scale
+        modelMatrix.translate(-2.57, -1.41, 2.40);
+        modelMatrix.rotate(-20+currentAngle,1,0,0);
+        modelMatrix.scale(0.10, 0.03, 0.13); // Scale
+        
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        
+        modelMatrix.translate(0, 2, 0);
+        modelMatrix.scale(1, 0.5, 1); // Scale
+
+        modelMatrix.rotate(-currentAngle,1,0,0);
+        //modelMatrix.rotate(currentAngle,1,0,0);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -2336,17 +2353,24 @@ function animateTranslate(translation) {
   g_last = now;
   // Update the current rotation angle (adjusted by the elapsed time)
   var newTranslation = translation + (1 * elapsed) / 100;
-  return newTranslation %= 100;
+  return newTranslation %= 8;
 }
 
 function animateRotate(angle) {
+
+  //console.log(angle);
   // Calculate the elapsed time
   var now = Date.now();
   var elapsed = now - g_last;
   g_last = now;
+
+
   // Update the current rotation angle (adjusted by the elapsed time)
-  var newAngle = angle + (ANGLE_STEP * elapsed) / 1000.0;
-  return newAngle %= 45;
+  var newAngle = angle + ANGLE_STEP;
+
+  console.log(newAngle);
+
+  return newAngle %= 60;
 }
 
 
