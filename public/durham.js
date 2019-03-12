@@ -1589,7 +1589,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, 1, 0);
         modelMatrix.scale(0.5, 0.5, 0.5); 
-        modelMatrix.rotate(-20,0,1,0);
+        modelMatrix.rotate(-20+currentAngle,0,1,0);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
 
@@ -1597,14 +1597,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.translate(0.8, 0.35, 0);
         modelMatrix.scale(0.8, 0.8, 0.8); 
         modelMatrix.rotate(20,0,1,0);
-        modelMatrix.rotate(45,0,0,1);
+        modelMatrix.rotate(45+currentAngle,0,0,1);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
 
       pushMatrix(modelMatrix);
         modelMatrix.translate(0.3, 0.9, 0.4);
         modelMatrix.scale(0.6, 0.6, 0.6); 
-        modelMatrix.rotate(20,0,1,0);
+        modelMatrix.rotate(20 + currentAngle,0,1,0);
         //modelMatrix.rotate(45,0,0,1);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
@@ -1612,7 +1612,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, 0.7, 0.4);
         modelMatrix.scale(0.6, 0.6, 0.6); 
-        modelMatrix.rotate(20,0,1,0);
+        modelMatrix.rotate(20 + currentAngle,0,1,0);
         //modelMatrix.rotate(45,0,0,1);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
@@ -2363,7 +2363,7 @@ function animateRotate(angle) {
   var newAngle = angle + WING_STEP;
 
   //console.log(newAngle);
-  
+
   return newAngle %= 60;
 }
 
