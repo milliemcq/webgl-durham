@@ -169,7 +169,8 @@ var main = function (treeModel) {
 
   var tick = function() {
     currentTranslation = animate(currentTranslation);  // Update the rotation angle
-    drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel, currentTranslation);
+    currentAngle = animate(currentTranslation);  // Update the rotation angle
+    drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel, currentTranslation, currentAngle);
     requestAnimationFrame(tick, canvas); // Request that the browser calls tick
   };
   tick();
@@ -1418,7 +1419,7 @@ function popMatrix() { // Retrieve the matrix from the array
 }
 
 
-function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, model, currentTranslation) {
+function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, model, currentTranslation, currentAngle) {
  console.log(currentTranslation);
  var GrassTexture = gl.createTexture()
   if(!GrassTexture)
@@ -2328,15 +2329,26 @@ function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler
 }
 
 var g_last = Date.now();
-function animate(translation) {
+function animateTranslate(translation) {
   // Calculate the elapsed time
   var now = Date.now();
   var elapsed = now - g_last;
   g_last = now;
   // Update the current rotation angle (adjusted by the elapsed time)
   var newTranslation = translation + (1 * elapsed) / 100;
-  return newTranslation %= 8;
+  return newTranslation %= 100;
 }
+
+function animateRotate(angle) {
+  // Calculate the elapsed time
+  var now = Date.now();
+  var elapsed = now - g_last;
+  g_last = now;
+  // Update the current rotation angle (adjusted by the elapsed time)
+  var newAngle = angle + (ANGLE_STEP * elapsed) / 1000.0;
+  return newAngle %= 45;
+}
+
 
 
 
