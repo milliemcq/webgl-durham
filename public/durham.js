@@ -609,7 +609,7 @@ gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 return indices.length;
 }
 
-function buildingRoofBuffers(gl) {
+function buildingRoofBuffers(gl, grey) {
   var vertices = new Float32Array([   // Coordinates
     0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5,-0.5, 0.5,   0.5,-0.5, 0.5, // v0-v1-v2-v3 front
     0.5, 0.5,-0.5,   0.5,-0.5, 0.5,   0.5, -0.3,-0.3,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
@@ -620,6 +620,7 @@ function buildingRoofBuffers(gl) {
  ]);
 
 
+ if(grey){
   var colors = new Float32Array([    // Colors
     0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  // v0-v1-v2-v3 front 
     0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,     // v0-v3-v4-v5 right
@@ -628,6 +629,18 @@ function buildingRoofBuffers(gl) {
     0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,    // v7-v4-v3-v2 down
     0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824　    // v4-v7-v6-v5 back
   ]);
+}
+else{
+  var colors = new Float32Array([    // Colors
+    1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,  // v0-v1-v2-v3 front 
+    1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,     // v0-v3-v4-v5 right
+    1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,    // v0-v5-v6-v1 up
+    1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,    // v1-v6-v7-v2 left
+    1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,    // v7-v4-v3-v2 down
+    1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,　    // v4-v7-v6-v5 back
+  ]);
+
+}
 
 
   var normals = new Float32Array([    // Normal
@@ -1370,327 +1383,6 @@ function popMatrix() { // Retrieve the matrix from the array
   return g_matrixStack.pop();
 }
 
-function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel) {
-
-  // Clear color and depth buffer
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  gl.uniform1i(u_isLighting, true); // Will not apply lighting
-  gl.uniform1i(u_UseTextures, false);
-
-  // Set the vertex coordinates and color (for the x, y axes)
-
-  var n = initAxesVertexBuffers(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-   
-  // Calculate the view matrix and the projection matrix
-  modelMatrix.setTranslate(0, 0, 0);  // No Translation
-  // Pass the model matrix to the uniform variable
-  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
-
-  // Draw x and y axes
-  gl.drawArrays(gl.LINES, 0, n);
-
-  gl.uniform1i(u_isLighting, true); // Will apply lighting
-
-    // Rotate, and then translate
-    modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
-    modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
-    modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-
-
-  // CREATE THE SIGN STAND
-  var n = signStand(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.7, -2);
-    modelMatrix.scale(0.1, 0.2, 0.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.7, -2.4);
-    modelMatrix.scale(0.1, 0.2, 0.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-
-  var n = greenCube(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(0, -2, 0);
-    modelMatrix.scale(8, 0.05, 8); 
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  // CREATING ALL THE WALLS
-  var n = greyCube(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-3, -1.5, -3.95);
-    modelMatrix.scale(2, 1, 0.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-1.5, -1.6, -3.95);
-    modelMatrix.scale(2, 0.8, 0.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-0.2, -1.75, -3.95);
-    modelMatrix.scale(0.7, 0.5, 0.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //This is the sign
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.55, -2.2);
-    modelMatrix.rotate(45,0,0,1);
-    modelMatrix.rotate(90,0,1,0);
-    modelMatrix.scale(0.7, 0.5, 0.05); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //CREATING THE BUILDING
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-2.5, -1.95, -1.9);
-    modelMatrix.scale(2.5, 0.1, 4); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-2.5, -1.9, -1.95);
-    modelMatrix.scale(2.3, 0.08, 3.9); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //left wall
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-3.5, -0.9, -2.45);
-    modelMatrix.scale(0.08, 2.1, 3); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //right wall
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-1.5, -1.5, -2.45);
-    modelMatrix.scale(0.08, 1, 3); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //right wall
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-1.5, -0.1, -2.45);
-    modelMatrix.scale(0.08, 0.5, 3); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //right wall
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-1.5, -0.5, -3.45);
-    modelMatrix.scale(0.08, 1, 1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //right wall
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-1.5, -0.5, -1.45);
-    modelMatrix.scale(0.08, 1, 1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //back wall
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-2.5, -0.8, -3.95);
-    modelMatrix.scale(2.09, 2.1, 0.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //front left wall
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-3.44, -0.8, -0.91);
-    modelMatrix.scale(0.2, 2.1, 0.08); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-2.9, -0.8, -0.91);
-    modelMatrix.scale(0.2, 2.1, 0.08); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-2.1, -0.8, -0.91);
-    modelMatrix.scale(0.2, 2.1, 0.08); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-1.56, -0.8, -0.91);
-    modelMatrix.scale(0.2, 2.1, 0.08); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //top front
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-2.5, -0.05, -0.91);
-    modelMatrix.scale(2.09, 0.6, 0.08); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //bottom left front
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-3.1, -1.5, -0.91);
-    modelMatrix.scale(0.5, 0.7, 0.08); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  //bottom right front
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-1.9, -1.5, -0.91);
-    modelMatrix.scale(0.5, 0.7, 0.08); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  // CREATING THE ROOF
-  var n = buildingRoofBuffers(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-2.5, 0.1, -2.1);
-    modelMatrix.rotate(180,1,0,0);
-    //modelMatrix.rotate(-5,1,0,1);
-    modelMatrix.rotate(45,0,0,1);
-    modelMatrix.rotate(90,0,1,0);
-    modelMatrix.scale(4, 1.8, 1.8); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-
-
-  //CREATING THE BENCH
-  var n = brownCube(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.7, 3);
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(1, 0.2, 0.05); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.5, 3.2);
-    modelMatrix.rotate(180,1,0,0);
-    modelMatrix.scale(1, 0.2, 0.05); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  /*
-  var n = sphere(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(0, 0, 0);
-    modelMatrix.scale(1, 1, 1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();*/
-
-  
-  //CREATE THE CYLINDER
-  var n = initCylinderArrayBuffer(gl, true);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-2, -0.9, -0.4);
-    
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-1.6, -0.9, -0.4);
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-3, -0.9, -0.4);
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(-3.4, -0.9, -0.4);
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(0.13, 0.13, 1.1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-
-  /*
-  var n = initTreeBuffer(gl, treeModel);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(0, 0, 0);
-    
-    //modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(1, 1, 1); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-
-  /*CREATE THE BIRD
-  var n = initBirdBuffer(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(0,0,0);
-    
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(0.01, 0.01, 0.01); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();*/
-  
-}
 
 function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
 
@@ -2443,7 +2135,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(-2.5, -1.5, 2.5);
         //modelMatrix.rotate(90,1,0,0);
-        modelMatrix.scale(0.13, 0.1, 0.1); // Scale
+        modelMatrix.scale(0.15, 0.13, 0.15); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.57, -1.39, 2.5);
+        //modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(0.10, 0.1, 0.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
