@@ -379,7 +379,7 @@ function greenCube(gl) {
     return indices.length;
   }
 
-  function blackCube(gl) {
+  function blackCube(gl, color) {
     // Create a cube
     //    v6----- v5
     //   /|      /|
@@ -397,16 +397,41 @@ function greenCube(gl) {
        0.5,-0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5, 0.5,-0.5,   0.5, 0.5,-0.5  // v4-v7-v6-v5 back
     ]);
   
+
+    switch(color) {
+      case "black":
+          var colors = new Float32Array([    // Colors
+            0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v1-v2-v3 front
+            0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v3-v4-v5 right
+            0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v5-v6-v1 up
+            0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v1-v6-v7-v2 left
+            0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v7-v4-v3-v2 down
+            0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,　  // v4-v7-v6-v5 back
+        ]);
+        break;
+      case "orange":
+        var colors = new Float32Array([    // Colors
+          1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,  // v0-v1-v2-v3 front 
+          1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,     // v0-v3-v4-v5 right
+          1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,    // v0-v5-v6-v1 up
+          1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,    // v1-v6-v7-v2 left
+          1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,    // v7-v4-v3-v2 down
+          1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,　    // v4-v7-v6-v5 back
+        ]);
+        break;
+      default:
+        var colors = new Float32Array([    // Colors
+          0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v1-v2-v3 front
+          0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v3-v4-v5 right
+          0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v5-v6-v1 up
+          0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v1-v6-v7-v2 left
+          0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v7-v4-v3-v2 down
+          0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,　  // v4-v7-v6-v5 back
+      ]);
+    
+    }
   
-    var colors = new Float32Array([    // Colors
-      0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v1-v2-v3 front
-      0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v3-v4-v5 right
-      0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v5-v6-v1 up
-      0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v1-v6-v7-v2 left
-      0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v7-v4-v3-v2 down
-      0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,　  // v4-v7-v6-v5 back
-   ]);
-  
+    
   
     var normals = new Float32Array([    // Normal
       0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
@@ -2126,37 +2151,57 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
       
       //BIRD
-      var n = blackCube(gl);
+      var n = blackCube(gl, "black");
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
       }
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.5, -1.5, 2.5);
+        modelMatrix.translate(-2.5, -1.46, 2.5);
         modelMatrix.scale(0.15, 0.13, 0.15); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.57, -1.39, 2.5);
+        modelMatrix.translate(-2.57, -1.34, 2.5);
         modelMatrix.scale(0.10, 0.1, 0.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       //WING 1
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.57, -1.43, 2.625);
+        modelMatrix.translate(-2.57, -1.38, 2.625);
         modelMatrix.scale(0.10, 0.03, 0.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       //WING 1
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.57, -1.43, 2.38);
+        modelMatrix.translate(-2.57, -1.38, 2.38);
         modelMatrix.scale(0.10, 0.03, 0.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
+
+      //LEGS
+      var n = blackCube(gl, "orange");
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.5, -1.55, 2.545);
+        modelMatrix.scale(0.1, 0.13, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.5, -1.55, 2.445);
+        modelMatrix.scale(0.1, 0.13, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
 
       var n = buildingRoofBuffers(gl, false);
       if (n < 0) {
@@ -2165,7 +2210,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       }
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.63, -1.39, 2.5);
+        modelMatrix.translate(-2.63, -1.34, 2.5);
         modelMatrix.rotate(180,1,0,0);
         //modelMatrix.rotate(-5,1,0,1);
         modelMatrix.rotate(-45,0,0,1);
