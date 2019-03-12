@@ -80,6 +80,7 @@ var projMatrix = new Matrix4();  // The projection matrix
 var g_normalMatrix = new Matrix4();  // Coordinate transformation matrix for normals
 
 var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
+var WING_STEP = 10;
 var ZOOM_STEP = 0.5
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
@@ -171,7 +172,7 @@ var main = function (treeModel) {
   var tick = function() {
     currentTranslation = animateTranslate(currentTranslation);  // Update the rotation angle
     currentAngle = animateRotate(currentAngle);  // Update the rotation angle
-    console.log(currentAngle);
+    //console.log(currentAngle);
     drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel, currentTranslation, currentAngle);
     requestAnimationFrame(tick, canvas); // Request that the browser calls tick
   };
@@ -2170,32 +2171,35 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       }
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.5, -1.46, 2.5);
-        modelMatrix.scale(0.15, 0.13, 0.15); // Scale
+        
+        modelMatrix.translate(-2.5, (-1.46 + currentTranslation), 2.5);
+        modelMatrix.rotate(45,0,1,0);
+        modelMatrix.scale(0.13, 0.13, 0.15); // Scale
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.57, -1.34, 2.5);
+        modelMatrix.translate(-2.5, (-1.34 + currentTranslation), 2.57);
         modelMatrix.scale(0.10, 0.1, 0.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-      console.log(currentAngle)
+      //console.log(currentAngle)
       //WING 1
       pushMatrix(modelMatrix);
         //modelMatrix.rotate(currentAngle,1,0,0);
-        modelMatrix.translate(-2.565, -1.41, 2.625);
-        modelMatrix.rotate(20-currentAngle,1,0,0);
-        modelMatrix.scale(0.10, 0.03, 0.13); // Scale
+        modelMatrix.translate(-2.4, (-1.41 + currentTranslation), 2.5);
+        modelMatrix.rotate(20-currentAngle,0,0,1);
+        modelMatrix.scale(0.13, 0.03, 0.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       //WING 2
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.57, -1.41, 2.40);
-        modelMatrix.rotate(-20+currentAngle,1,0,0);
-        modelMatrix.scale(0.10, 0.03, 0.13); // Scale
+        modelMatrix.translate(-2.597, (-1.41 + currentTranslation), 2.5);
+        modelMatrix.rotate(-20+currentAngle,0,0,1);
+        modelMatrix.scale(0.13, 0.03, 0.1); // Scale
         
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
@@ -2208,14 +2212,17 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       }
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.5, -1.55, 2.545);
-        modelMatrix.scale(0.1, 0.13, 0.05); // Scale
+        modelMatrix.translate(-2.45, (-1.55 + currentTranslation), 2.5);
+        //modelMatrix.rotate(45,0,1,0);
+        modelMatrix.scale(0.03, 0.13, 0.1); // Scale
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.5, -1.55, 2.445);
-        modelMatrix.scale(0.1, 0.13, 0.05); // Scale
+        modelMatrix.translate(-2.55, (-1.55+currentTranslation), 2.5);
+        //modelMatrix.rotate(45,0,1,0);
+        modelMatrix.scale(0.03, 0.13, 0.07); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -2227,12 +2234,9 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       }
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.63, -1.34, 2.5);
-        modelMatrix.rotate(180,1,0,0);
-        //modelMatrix.rotate(-5,1,0,1);
-        modelMatrix.rotate(-45,0,0,1);
-        modelMatrix.rotate(90,0,1,0);
-        modelMatrix.scale(0.1, 0.06, 0.06); // Scale
+        modelMatrix.translate(-2.5, (-1.34 + currentTranslation), 2.63);
+        modelMatrix.rotate(-135,1,0,0);
+        modelMatrix.scale(0.1, 0.07, 0.07); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -2342,8 +2346,8 @@ function animateTranslate(translation) {
   var elapsed = now - g_last;
   g_last = now;
   // Update the current rotation angle (adjusted by the elapsed time)
-  var newTranslation = translation + (1 * elapsed) / 100;
-  return newTranslation %= 8;
+  var newTranslation = translation + (1 * elapsed) / 1000;
+  return newTranslation %= 3;
 }
 
 function animateRotate(angle) {
@@ -2356,10 +2360,10 @@ function animateRotate(angle) {
 
 
   // Update the current rotation angle (adjusted by the elapsed time)
-  var newAngle = angle + ANGLE_STEP;
+  var newAngle = angle + WING_STEP;
 
-  console.log(newAngle);
-
+  //console.log(newAngle);
+  
   return newAngle %= 60;
 }
 
