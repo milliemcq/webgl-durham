@@ -2432,6 +2432,25 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
+      
+      //BIRD
+      var n = blackCube(gl);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.5, -1.5, 2.5);
+        //modelMatrix.rotate(90,1,0,0);
+        modelMatrix.scale(0.13, 0.1, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+  
+
+
+
 
   }
 
@@ -2459,15 +2478,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
     modelMatrix.scale(1, 0.2, 0.05); // Scale
     drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
   modelMatrix = popMatrix();
-
-
-  var n = blackCube(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  
 
 
 
