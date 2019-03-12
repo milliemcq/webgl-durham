@@ -2200,16 +2200,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-      pushMatrix(modelMatrix);
-        
-        modelMatrix.translate(0, 2, 0);
-        modelMatrix.scale(1, 0.5, 1); // Scale
-
-        modelMatrix.rotate(-currentAngle,1,0,0);
-        //modelMatrix.rotate(currentAngle,1,0,0);
-        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-      modelMatrix = popMatrix();
-
       //LEGS
       var n = blackCube(gl, "orange");
       if (n < 0) {
