@@ -149,6 +149,8 @@ var main = function (treeModel) {
 
   //viewMatrix.setLookAt(0, 0, 50, 0, 0, -100, 0, 1, 0);
   //zoom = zoom + 100;
+
+  var currentTranslation = 0.0;
   
   projMatrix.setPerspective(30, 800/800, 1, 100);
   // Pass the model, view, and projection matrix to the uniform variable respectively
@@ -166,8 +168,8 @@ var main = function (treeModel) {
   }
 
   var tick = function() {
-    currentAngle = animate(currentAngle);  // Update the rotation angle
-    drawWithTextures(gl, n, currentAngle, modelMatrix, u_ModelMatrix);   // Draw the triangle
+    currentTranslation = animate(currentTranslation);  // Update the rotation angle
+    drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel, currentTranslation);
     requestAnimationFrame(tick, canvas); // Request that the browser calls tick
   };
   tick();
@@ -1416,8 +1418,8 @@ function popMatrix() { // Retrieve the matrix from the array
 }
 
 
-function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
-
+function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, model, currentTranslation) {
+ console.log(currentTranslation);
  var GrassTexture = gl.createTexture()
   if(!GrassTexture)
   {
@@ -2067,7 +2069,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
       //the trunk
       pushMatrix(modelMatrix);
-        modelMatrix.translate(0, -0.9, 0);
+        modelMatrix.translate((0 + currentTranslation), -0.9, 0);
         
         modelMatrix.rotate(90,1,0,0);
         modelMatrix.scale(0.2, 0.2, 1.1); // Scale
@@ -2326,14 +2328,14 @@ function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler
 }
 
 var g_last = Date.now();
-function animate(angle) {
+function animate(translation) {
   // Calculate the elapsed time
   var now = Date.now();
   var elapsed = now - g_last;
   g_last = now;
   // Update the current rotation angle (adjusted by the elapsed time)
-  var newAngle = angle + (ANGLE_STEP * elapsed) / 1000.0;
-  return newAngle %= 360;
+  var newTranslation = translation + (1 * elapsed) / 100;
+  return newTranslation %= 8;
 }
 
 
