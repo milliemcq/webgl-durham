@@ -1997,7 +1997,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
 
       // CREATING THE ROOF
-      var n = buildingRoofBuffers(gl);
+      var n = buildingRoofBuffers(gl, true);
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
@@ -2134,15 +2134,36 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
       pushMatrix(modelMatrix);
         modelMatrix.translate(-2.5, -1.5, 2.5);
-        //modelMatrix.rotate(90,1,0,0);
         modelMatrix.scale(0.15, 0.13, 0.15); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
         modelMatrix.translate(-2.57, -1.39, 2.5);
-        //modelMatrix.rotate(90,1,0,0);
         modelMatrix.scale(0.10, 0.1, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      //WING 1
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.57, -1.43, 2.65);
+        modelMatrix.scale(0.10, 0.03, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      var n = buildingRoofBuffers(gl, false);
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.63, -1.39, 2.5);
+        modelMatrix.rotate(180,1,0,0);
+        //modelMatrix.rotate(-5,1,0,1);
+        modelMatrix.rotate(-45,0,0,1);
+        modelMatrix.rotate(90,0,1,0);
+        modelMatrix.scale(0.1, 0.06, 0.06); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
