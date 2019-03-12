@@ -2087,7 +2087,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
       modelMatrix.translate(-3.09, 0.47, -0.05);
         modelMatrix.rotate(31.5,0,0,1);
-        modelMatrix.scale(1.35, 0.08, 0.1); // Scale
+        modelMatrix.scale(1.42, 0.08, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+      modelMatrix.translate(-1.9, 0.47, -0.05);
+        modelMatrix.rotate(-31.5,0,0,1);
+        modelMatrix.scale(1.42, 0.08, 0.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
