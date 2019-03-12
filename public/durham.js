@@ -860,6 +860,9 @@ else{
  
  //console.log(vertices.length)
  //console.log(normals.length)
+
+ //console.log(vertices);
+ ///console.log(colors);
  
   // Write the vertex property to buffers (coordinates, colors and normals)
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
@@ -1165,6 +1168,116 @@ function initSphereBuffers(gl) {
   indicesIco.length
 }
 
+function initIcosahedronBuffers(gl) {
+  var phi = (1 + Math.sqrt(5)) / 2;
+  var a = 1;
+  var b = 1 / phi;
+
+  var vertices = [
+     0,  b, -a,  -b,  a,  0,   b,  a,  0,
+    -b,  a,  0,   0,  b,  a,   b,  a,  0,
+     0, -b,  a,   0,  b,  a,  -a,  0,  b,
+     a,  0,  b,   0,  b,  a,   0, -b,  a,
+     0, -b, -a,   0,  b, -a,   a,  0, -b,
+    -a,  0, -b,   0,  b, -a,   0, -b, -a,
+     b, -a,  0,   0, -b,  a,  -b, -a,  0,
+    -b, -a,  0,   0, -b, -a,   b, -a,  0,
+    -a,  0,  b,  -b,  a,  0,  -a,  0, -b,
+    -a,  0, -b,  -b, -a,  0,  -a,  0,  b,
+     a,  0, -b,   b,  a,  0,   a,  0,  b,
+     a,  0,  b,   b, -a,  0,   a,  0, -b,
+    -a,  0,  b,   0,  b,  a,  -b,  a,  0,
+     b,  a,  0,   0,  b,  a,   a,  0,  b,
+    -b,  a,  0,   0,  b, -a,  -a,  0, -b,
+     a,  0, -b,   0,  b, -a,   b,  a,  0,
+    -a,  0, -b,   0, -b, -a,  -b, -a,  0,
+     b, -a,  0,   0, -b, -a,   a,  0, -b,
+    -b, -a,  0,   0, -b,  a,  -a,  0,  b,
+     a,  0,  b,   0, -b,  a,   b, -a,  0
+  ];
+
+  function sub (a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; };
+  function cross (a, b) {
+    return [
+      a[1] * b[2] - a[2] * b[1],
+      a[2] * b[0] - a[0] * b[2],
+      a[0] * b[1] - a[1] * b[0]
+    ];
+  };
+  function normalize (a) {
+    var length = a[0] * a[0] + a[1] * a[1] + a[2] * a[2];
+    return [a[0] / length, a[1] / length, a[2] / length];
+  };
+
+  var normals = [];
+  for (var i = 0; i < vertices.length; i += 9) {
+    var a = [vertices[i    ], vertices[i + 1], vertices[i + 2]];
+    var b = [vertices[i + 3], vertices[i + 4], vertices[i + 5]];
+    var c = [vertices[i + 6], vertices[i + 7], vertices[i + 8]];
+    // Normalizing is probably not necessary.
+    // It should also be seperated out.
+    var normal = normalize(cross(sub(a, b), sub(a, c)));
+    normals = normals.concat(normal, normal, normal);
+  }
+
+
+  var colors = new Float32Array([    // Colors
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v1-v2-v3 front
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v3-v4-v5 right
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v5-v6-v1 up
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v1-v6-v7-v2 left
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v7-v4-v3-v2 down
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+ ]);
+
+  console.log(colors);
+
+  var indices = new Uint8Array(vertices.length / 3);
+
+  for (var i = 0; i < indices.length; ++i) indices[i] = i;
+
+  //console.log(vertices.length)
+ //console.log(normals.length)
+
+  console.log(vertices)
+  console.log(indices)
+  console.log(normals)
+ 
+  // Write the vertex property to buffers (coordinates, colors and normals)
+  if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
+  //gl.disableVertexAttribArray('a_TexCoords');
+  //gl.disableVertexAttribArray(1);
+  gl.disableVertexAttribArray(0);
+  gl.disableVertexAttribArray(3);
+  gl.disableVertexAttribArray(2);
+
+
+  // Write the indices to the buffer object
+  var indexBuffer = gl.createBuffer();
+  if (!indexBuffer) {
+    console.log('Failed to create the buffer object');
+    return false;
+  }
+ 
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+ 
+  console.log(indices.length)
+
+  return indices.length;
+};
+
 var g_matrixStack = []; // Array for storing a matrix
 function pushMatrix(m) { // Store the specified matrix to the array
   var m2 = new Matrix4(m);
@@ -1464,20 +1577,6 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, tr
   modelMatrix = popMatrix();
 
 
-  var n = initSphereBuffers(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(0, 0, 0);
-    
-    //modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(1, 4, 4); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
   /*
   var n = initTreeBuffer(gl, treeModel);
   if (n < 0) {
@@ -1513,34 +1612,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, tr
 
 function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures) {
 
-  
-
-  // Set the vertex coordinates and color (for the x, y axes)
-
-  /*var n = initAxesVertexBuffers(gl);
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-   // Get the storage location of u_Sampler
-   
-
-  // Calculate the view matrix and the projection matrix
-  modelMatrix.setTranslate(0, 0, 0);  // No Translation
-  // Pass the model matrix to the uniform variable
-  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
-
-  // Draw x and y axes
-  gl.drawArrays(gl.LINES, 0, n);
-
-  gl.uniform1i(u_isLighting, true); // Will apply lighting*/
-
-    // Rotate, and then translate
-   
-
-  
-  var GrassTexture = gl.createTexture()
+ var GrassTexture = gl.createTexture()
   if(!GrassTexture)
   {
     console.log('Failed to create the texture object');
@@ -1568,7 +1640,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
       gl.uniform1i(u_isLighting, true); // Will not apply lighting
-      gl.uniform1i(u_UseTextures, false);
+      gl.uniform1i(u_UseTextures, true);
 
       modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
       modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
@@ -1579,7 +1651,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         console.log('Failed to set the vertex information');
         return;
       }
-      gl.uniform1i(u_UseTextures, false);
+      gl.uniform1i(u_UseTextures, true);
 
       //This is the sign
       pushMatrix(modelMatrix);
@@ -1587,8 +1659,8 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.rotate(45,0,0,1);
         modelMatrix.rotate(90,0,1,0);
         modelMatrix.scale(0.7, 0.5, 0.05); // Scale
-        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        //drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+        loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
       modelMatrix = popMatrix();
 
       gl.uniform1i(u_UseTextures, false);
@@ -1603,7 +1675,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, -2, 0);
         modelMatrix.scale(8, 0.1, 8); 
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1611,7 +1683,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(-0.15, -1.9, 0.3);
         modelMatrix.scale(0.07, 0.15, 0.05); 
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1619,7 +1691,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.translate(-0.3, -1.9, 0.3);
         modelMatrix.scale(0.07, 0.15, 0.05); 
         modelMatrix.rotate(-20,0,1,0);
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1627,7 +1699,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.translate(-0.2, -1.9, 0.45);
         modelMatrix.scale(0.07, 0.15, 0.05); 
         modelMatrix.rotate(-20,0,1,0);
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1635,7 +1707,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(0.15, -1.9, 0.3);
         modelMatrix.scale(0.07, 0.15, 0.05); 
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1643,7 +1715,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.translate(0.3, -1.9, 0.3);
         modelMatrix.scale(0.07, 0.15, 0.05); 
         modelMatrix.rotate(-20,0,1,0);
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1651,7 +1723,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.translate(0.2, -1.9, 0.45);
         modelMatrix.scale(0.07, 0.15, 0.05); 
         modelMatrix.rotate(-20,0,1,0);
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1659,7 +1731,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(-1.85, -1.9, 2.0);
         modelMatrix.scale(0.07, 0.15, 0.05); 
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1667,7 +1739,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.translate(-2.0, -1.9, 2.0);
         modelMatrix.scale(0.07, 0.15, 0.05); 
         modelMatrix.rotate(-20,0,1,0);
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1675,15 +1747,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.translate(-1.9, -1.9, 2.15);
         modelMatrix.scale(0.07, 0.15, 0.05); 
         modelMatrix.rotate(-20,0,1,0);
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       //BENCH GRASS CLUSTER
       pushMatrix(modelMatrix);
         modelMatrix.translate(1.15, -1.9, 3.0);
-        modelMatrix.scale(0.07, 0.15, 0.05); 
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        modelMatrix.scale(0.07, 0.15, 0.05);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1691,7 +1762,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.translate(1.3, -1.9, 3.0);
         modelMatrix.scale(0.07, 0.15, 0.05); 
         modelMatrix.rotate(-20,0,1,0);
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1699,9 +1769,60 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         modelMatrix.translate(1.2, -1.9, 3.15);
         modelMatrix.scale(0.07, 0.15, 0.05); 
         modelMatrix.rotate(-20,0,1,0);
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
+
+
+      //TREE LEAVES
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0, 1, 0);
+        modelMatrix.scale(0.5, 0.5, 0.5); 
+        modelMatrix.rotate(-20,0,1,0);
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix(); 
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0.8, 0.35, 0);
+        modelMatrix.scale(0.8, 0.8, 0.8); 
+        modelMatrix.rotate(20,0,1,0);
+        modelMatrix.rotate(45,0,0,1);
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix(); 
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0.3, 0.9, 0.4);
+        modelMatrix.scale(0.6, 0.6, 0.6); 
+        modelMatrix.rotate(20,0,1,0);
+        //modelMatrix.rotate(45,0,0,1);
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix(); 
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0, 0.7, 0.4);
+        modelMatrix.scale(0.6, 0.6, 0.6); 
+        modelMatrix.rotate(20,0,1,0);
+        //modelMatrix.rotate(45,0,0,1);
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix(); 
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0, 0.5, -0.6);
+        modelMatrix.scale(0.6, 0.6, 0.6); 
+        modelMatrix.rotate(20,0,1,0);
+        modelMatrix.rotate(45,1,0,0);
+        //modelMatrix.rotate(45,0,0,1);
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix(); 
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-0.5, 0.5, 0);
+        modelMatrix.scale(0.6, 0.6, 0.6); 
+        modelMatrix.rotate(40,0,1,0);
+        modelMatrix.rotate(45,1,0,0);
+        //modelMatrix.rotate(45,0,0,1);
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix(); 
+
 
       
 
@@ -1874,12 +1995,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-      /*
-      var n = sphere(gl);
+      
+      /*var n = initIcosahedronBuffers(gl);
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
       }
+
+      console.log(n);
 
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, 0, 0);
@@ -2140,19 +2263,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix = popMatrix();
 
       
-      var n = initSphereBuffers(gl);
-      if (n < 0) {
-        console.log('Failed to set the vertex information');
-        return;
-      }
-
-      pushMatrix(modelMatrix);
-        modelMatrix.translate(0, 1, 0);
-        modelMatrix.scale(1, 1, 1); // Scale
-        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-      modelMatrix = popMatrix();
-
-      
       //CREATE THE CYLINDER
       var n = initCylinderArrayBuffer(gl, false);
       if (n < 0) {
@@ -2264,7 +2374,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
   GrassTexture.image.src = '/textures/signTexture.png';
 
-  gl.uniform1i(u_UseTextures, false);
+  gl.uniform1i(u_UseTextures, true);
   
   
 }
@@ -2364,6 +2474,8 @@ function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler
   // Draw the textured cube
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
+
+
 
 
 
