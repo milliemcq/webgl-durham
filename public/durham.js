@@ -2078,6 +2078,19 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.5, 0.14, -0.05);
+        modelMatrix.scale(2, 0.08, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+      modelMatrix.translate(-3.09, 0.47, -0.05);
+        modelMatrix.rotate(31.5,0,0,1);
+        modelMatrix.scale(1.35, 0.08, 0.1); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
 
       // CREATING THE ROOF
       var n = buildingRoofBuffers(gl);
