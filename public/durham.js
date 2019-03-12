@@ -1681,14 +1681,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
       //BENCH GRASS CLUSTER
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-1.85, -1.9, 2.0);
+        modelMatrix.translate(1.15, -1.9, 3.0);
         modelMatrix.scale(0.07, 0.15, 0.05); 
         //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.0, -1.9, 2.0);
+        modelMatrix.translate(1.3, -1.9, 3.0);
         modelMatrix.scale(0.07, 0.15, 0.05); 
         modelMatrix.rotate(-20,0,1,0);
         //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
@@ -1696,7 +1696,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-1.9, -1.9, 2.15);
+        modelMatrix.translate(1.2, -1.9, 3.15);
         modelMatrix.scale(0.07, 0.15, 0.05); 
         modelMatrix.rotate(-20,0,1,0);
         //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
