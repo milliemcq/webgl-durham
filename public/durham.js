@@ -223,175 +223,8 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextu
     default: return; // Skip drawing at no effective action
   }
 
-  // Draw the scene
-  //drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel);
 }
   
-
-function greyCube(gl) {
-  // Create a cube
-  //    v6----- v5
-  //   /|      /|
-  //  v1------v0|
-  //  | |     | |
-  //  | |v7---|-|v4
-  //  |/      |/
-  //  v2------v3
-  var vertices = new Float32Array([   // Coordinates
-     0.5, 0.5, 0.5,  -0.5, 0.5, 0.5,  -0.5,-0.5, 0.5,   0.5,-0.5, 0.5, // v0-v1-v2-v3 front
-     0.5, 0.5, 0.5,   0.5,-0.5, 0.5,   0.5,-0.5,-0.5,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
-     0.5, 0.5, 0.5,   0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, 0.5, 0.5, // v0-v5-v6-v1 up
-    -0.5, 0.5, 0.5,  -0.5, 0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
-    -0.5,-0.5,-0.5,   0.5,-0.5,-0.5,   0.5,-0.5, 0.5,  -0.5,-0.5, 0.5, // v7-v4-v3-v2 down
-     0.5,-0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5, 0.5,-0.5,   0.5, 0.5,-0.5  // v4-v7-v6-v5 back
-  ]);
-
-
-  var colors = new Float32Array([    // Colors
-    0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  // v0-v1-v2-v3 front 
-    0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,     // v0-v3-v4-v5 right
-    0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,     // v0-v5-v6-v1 up
-    0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,    // v1-v6-v7-v2 left
-    0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,    // v7-v4-v3-v2 down
-    0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824　    // v4-v7-v6-v5 back
- ]);
-
-
-  var normals = new Float32Array([    // Normal
-    0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
-    1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,  // v0-v3-v4-v5 right
-    0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,  // v0-v5-v6-v1 up
-   -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  // v1-v6-v7-v2 left
-    0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,  // v7-v4-v3-v2 down
-    0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // v4-v7-v6-v5 back
-  ]);
-
-
-  // Indices of the vertices
-  var indices = new Uint8Array([
-     0, 1, 2,   0, 2, 3,    // front
-     4, 5, 6,   4, 6, 7,    // right
-     8, 9,10,   8,10,11,    // up
-    12,13,14,  12,14,15,    // left
-    16,17,18,  16,18,19,    // down
-    20,21,22,  20,22,23     // back
- ]);
-
- // Texture Coordinates
- var texCoords = new Float32Array([
-  1.0, 1.0,    0.0, 1.0,   0.0, 0.0,   1.0, 0.0,  // v0-v1-v2-v3 front
-  0.0, 1.0,    0.0, 0.0,   1.0, 0.0,   1.0, 1.0,  // v0-v3-v4-v5 right
-  1.0, 0.0,    1.0, 1.0,   0.0, 1.0,   0.0, 0.0,  // v0-v5-v6-v1 up
-  1.0, 1.0,    0.0, 1.0,   0.0, 0.0,   1.0, 0.0,  // v1-v6-v7-v2 left
-  0.0, 0.0,    1.0, 0.0,   1.0, 1.0,   0.0, 1.0,  // v7-v4-v3-v2 down
-  0.0, 0.0,    1.0, 0.0,   1.0, 1.0,   0.0, 1.0   // v4-v7-v6-v5 back
-]);
-
-
-  // Write the vertex property to buffers (coordinates, colors and normals)
-  if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_TexCoords', texCoords, 2, gl.FLOAT)) return -1;
-  
-    // Unbind the buffer object
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-  // Write the indices to the buffer object
-  var indexBuffer = gl.createBuffer();
-  if (!indexBuffer) {
-    console.log('Failed to create the buffer object');
-    return false;
-  }
-
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-
-  return indices.length;
-}
-
-function greenCube(gl) {
-    // Create a cube
-    //    v6----- v5
-    //   /|      /|
-    //  v1------v0|
-    //  | |     | |
-    //  | |v7---|-|v4
-    //  |/      |/
-    //  v2------v3
-    var vertices = new Float32Array([   // Coordinates
-       0.5, 0.5, 0.5,  -0.5, 0.5, 0.5,  -0.5,-0.5, 0.5,   0.5,-0.5, 0.5, // v0-v1-v2-v3 front
-       0.5, 0.5, 0.5,   0.5,-0.5, 0.5,   0.5,-0.5,-0.5,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
-       0.5, 0.5, 0.5,   0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, 0.5, 0.5, // v0-v5-v6-v1 up
-      -0.5, 0.5, 0.5,  -0.5, 0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
-      -0.5,-0.5,-0.5,   0.5,-0.5,-0.5,   0.5,-0.5, 0.5,  -0.5,-0.5, 0.5, // v7-v4-v3-v2 down
-       0.5,-0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5, 0.5,-0.5,   0.5, 0.5,-0.5  // v4-v7-v6-v5 back
-    ]);
-  
-  
-    var colors = new Float32Array([    // Colors
-      0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v1-v2-v3 front
-      0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v3-v4-v5 right
-      0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v5-v6-v1 up
-      0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v1-v6-v7-v2 left
-      0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v7-v4-v3-v2 down
-      0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
-   ]);
-  
-  
-    var normals = new Float32Array([    // Normal
-      0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
-      1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,  // v0-v3-v4-v5 right
-      0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,  // v0-v5-v6-v1 up
-     -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  // v1-v6-v7-v2 left
-      0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,  // v7-v4-v3-v2 down
-      0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // v4-v7-v6-v5 back
-    ]);
-
-     // Texture Coordinates
-    var texCoords = new Float32Array([
-      1.0, 1.0,    0.0, 1.0,   0.0, 0.0,   1.0, 0.0,  // v0-v1-v2-v3 front
-      0.0, 1.0,    0.0, 0.0,   1.0, 0.0,   1.0, 1.0,  // v0-v3-v4-v5 right
-      1.0, 0.0,    1.0, 1.0,   0.0, 1.0,   0.0, 0.0,  // v0-v5-v6-v1 up
-      1.0, 1.0,    0.0, 1.0,   0.0, 0.0,   1.0, 0.0,  // v1-v6-v7-v2 left
-      0.0, 0.0,    1.0, 0.0,   1.0, 1.0,   0.0, 1.0,  // v7-v4-v3-v2 down
-      0.0, 0.0,    1.0, 0.0,   1.0, 1.0,   0.0, 1.0   // v4-v7-v6-v5 back
-    ]);
-  
-  
-    // Indices of the vertices
-    var indices = new Uint8Array([
-       0, 1, 2,   0, 2, 3,    // front
-       4, 5, 6,   4, 6, 7,    // right
-       8, 9,10,   8,10,11,    // up
-      12,13,14,  12,14,15,    // left
-      16,17,18,  16,18,19,    // down
-      20,21,22,  20,22,23     // back
-   ]);
-  
-    //console.log("Inside green cube")
-    // Write the vertex property to buffers (coordinates, colors and normals)
-    if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
-    if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
-    if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
-    if (!initArrayBuffer(gl, 'a_TexCoords', texCoords, 2, gl.FLOAT)) return -1;
-  
-    // Unbind the buffer object
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-    // Write the indices to the buffer object
-    var indexBuffer = gl.createBuffer();
-    if (!indexBuffer) {
-      console.log('Failed to create the buffer object');
-      return false;
-    }
-  
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-  
-    return indices.length;
-  }
-
   function blackCube(gl, color) {
     // Create a cube
     //    v6----- v5
@@ -431,6 +264,37 @@ function greenCube(gl) {
           1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,    // v7-v4-v3-v2 down
           1, 0.5, 0,   1, 0.5, 0,  1, 0.5, 0,   1, 0.5, 0,　    // v4-v7-v6-v5 back
         ]);
+        break;
+      case "brown":
+        var colors = new Float32Array([    // Colors
+          0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v0-v1-v2-v3 front  
+          0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v0-v3-v4-v5 right
+          0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v0-v5-v6-v1 up
+          0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v1-v6-v7-v2 left
+          0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v7-v4-v3-v2 down
+          0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v4-v7-v6-v5 back
+        ]);
+        break;
+      case "green":
+        var colors = new Float32Array([    // Colors
+          0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v1-v2-v3 front
+          0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v3-v4-v5 right
+          0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v5-v6-v1 up
+          0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v1-v6-v7-v2 left
+          0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v7-v4-v3-v2 down
+          0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
+        ]);
+        break;
+      
+      case "grey":
+        var colors = new Float32Array([    // Colors
+          0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  // v0-v1-v2-v3 front 
+          0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,     // v0-v3-v4-v5 right
+          0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,     // v0-v5-v6-v1 up
+          0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,    // v1-v6-v7-v2 left
+          0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,    // v7-v4-v3-v2 down
+          0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824　    // v4-v7-v6-v5 back
+        ]);
         break;
       default:
         var colors = new Float32Array([    // Colors
@@ -499,73 +363,6 @@ function greenCube(gl) {
     return indices.length;
   }
 
-function brownCube(gl) {
-// Create a cube
-//    v6----- v5
-//   /|      /|
-//  v1------v0|
-//  | |     | |
-//  | |v7---|-|v4
-//  |/      |/
-//  v2------v3
-var vertices = new Float32Array([   // Coordinates
-    0.5, 0.5, 0.5,  -0.5, 0.5, 0.5,  -0.5,-0.5, 0.5,   0.5,-0.5, 0.5, // v0-v1-v2-v3 front
-    0.5, 0.5, 0.5,   0.5,-0.5, 0.5,   0.5,-0.5,-0.5,   0.5, 0.5,-0.5, // v0-v3-v4-v5 right
-    0.5, 0.5, 0.5,   0.5, 0.5,-0.5,  -0.5, 0.5,-0.5,  -0.5, 0.5, 0.5, // v0-v5-v6-v1 up
-    -0.5, 0.5, 0.5,  -0.5, 0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5,-0.5, 0.5, // v1-v6-v7-v2 left
-    -0.5,-0.5,-0.5,   0.5,-0.5,-0.5,   0.5,-0.5, 0.5,  -0.5,-0.5, 0.5, // v7-v4-v3-v2 down
-    0.5,-0.5,-0.5,  -0.5,-0.5,-0.5,  -0.5, 0.5,-0.5,   0.5, 0.5,-0.5  // v4-v7-v6-v5 back
-]);
-
-
-var colors = new Float32Array([    // Colors
-    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v0-v1-v2-v3 front  
-    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v0-v3-v4-v5 right
-    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v0-v5-v6-v1 up
-    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v1-v6-v7-v2 left
-    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v7-v4-v3-v2 down
-    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,    0.52, 0.37, 0.26,   // v4-v7-v6-v5 back
-]);
-
-
-var normals = new Float32Array([    // Normal
-    0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
-    1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,  // v0-v3-v4-v5 right
-    0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,  // v0-v5-v6-v1 up
-    -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  // v1-v6-v7-v2 left
-    0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,  // v7-v4-v3-v2 down
-    0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // v4-v7-v6-v5 back
-]);
-
-
-// Indices of the vertices
-var indices = new Uint8Array([
-    0, 1, 2,   0, 2, 3,    // front
-    4, 5, 6,   4, 6, 7,    // right
-    8, 9,10,   8,10,11,    // up
-    12,13,14,  12,14,15,    // left
-    16,17,18,  16,18,19,    // down
-    20,21,22,  20,22,23     // back
-]);
-
-
-// Write the vertex property to buffers (coordinates, colors and normals)
-if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
-if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
-if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
-
-// Write the indices to the buffer object
-var indexBuffer = gl.createBuffer();
-if (!indexBuffer) {
-    console.log('Failed to create the buffer object');
-    return false;
-}
-
-gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-
-return indices.length;
-}
 
 function signStand(gl, grey) {
 // Create a cube
@@ -1112,305 +909,6 @@ function initGrassBuffers(gl) {
 }
 
 
-
-function initAxesVertexBuffers(gl) {
-
-  var verticesColors = new Float32Array([
-    // Vertex coordinates and color (for axes)
-    -20.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // (x,y,z), (r,g,b) 
-     20.0,  0.0,   0.0,  1.0,  1.0,  1.0,
-     0.0,  20.0,   0.0,  1.0,  1.0,  1.0, 
-     0.0, -20.0,   0.0,  1.0,  1.0,  1.0,
-     0.0,   0.0, -20.0,  1.0,  1.0,  1.0, 
-     0.0,   0.0,  20.0,  1.0,  1.0,  1.0 
-  ]);
-  var n = 6;
-
-  // Create a buffer object
-  var vertexColorBuffer = gl.createBuffer();  
-  if (!vertexColorBuffer) {
-    console.log('Failed to create the buffer object');
-    return false;
-  }
-
-  // Bind the buffer object to target
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, verticesColors, gl.STATIC_DRAW);
-
-  var FSIZE = verticesColors.BYTES_PER_ELEMENT;
-  //Get the storage location of a_Position, assign and enable buffer
-  var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-  if (a_Position < 0) {
-    console.log('Failed to get the storage location of a_Position');
-    return -1;
-  }
-  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 6, 0);
-  gl.enableVertexAttribArray(a_Position);  // Enable the assignment of the buffer object
-
-  // Get the storage location of a_Position, assign buffer and enable
-  var a_Color = gl.getAttribLocation(gl.program, 'a_Color');
-  if(a_Color < 0) {
-    console.log('Failed to get the storage location of a_Color');
-    return -1;
-  }
-  gl.vertexAttribPointer(a_Color, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
-  gl.enableVertexAttribArray(a_Color);  // Enable the assignment of the buffer object
-
-  // Unbind the buffer object
-  gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-  return n;
-}
-
-function initTreeBuffer(gl, treeModel)
-{
-
-  //console.log(treeModel);
-
-   var vertices = treeModel.meshes[0].vertices;
-   var normals = treeModel.meshes[0].normals;
-   var indices = [].concat.apply([], treeModel.meshes[0].faces);
-
-
-   //console.log(vertices.length);
-   //console.log(indices.length);
-   //console.log(normals.length);
-  // Write the vertex property to buffers (coordinates, colors and normals)
-  if (!initArrayBuffer(gl, 'a_Position', new Float32Array(vertices), 3, gl.FLOAT)) return -1;
-  //if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(normals), 3, gl.FLOAT)) return -1;
-  //gl.disableVertexAttribArray('a_TexCoords');
-  gl.disableVertexAttribArray(1);
-  gl.disableVertexAttribArray(2);
-
-  // Write the indices to the buffer object
-  var indexBuffer = gl.createBuffer();
-  if (!indexBuffer) {
-    console.log('Failed to create the buffer object');
-    return false;
-  }
- 
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), gl.STATIC_DRAW);
-
-
-
-
-   return indices.length;
-}
-
-function initSphereBuffers(gl) {
-
-  
-  const vertices = [
-    //Top Fan
-    0.0, 1.0, 0.5,   // 0
-    0.5, 0.0, 1.0,   // 1
-    1.0, 0.5, 0.0,   // 2
-    0.0, 1.0, -0.5,  // 3
-    -1.0, 0.5, 0.0,  // 4
-    -0.5, 0.0, 1.0,  // 5
-    
-    //Bottom Fan
-    0.0, -1.0, -0.5, // 6
-    -0.5, 0.0, -1.0, // 7
-    0.5, 0.0, -1.0,  // 8
-    1.0, -0.5, 0.0,  // 9
-    0.0, -1.0, 0.5,  // 10
-    -1.0, -0.5, 0.0, // 11
-    
-    //Middle Strip
-    -1.0, -0.5, 0.0, // 12
-    -1.0, 0.5, 0.0,  // 13
-    -0.5, 0.0, -1.0, // 14
-    0.0, 1.0, -0.5,  // 15
-    0.5, 0.0, -1.0,  // 16
-    1.0, 0.5, 0.0,   // 17
-    1.0, -0.5, 0.0,  // 18
-    0.5, 0.0, 1.0,   // 19
-    0.0, -1.0, 0.5,  // 20
-    -0.5, 0.0, 1.0,  // 21
-  ]
-
-
-  const colorsIco = [
-    [0.90,  0.09,  0.29],    // 0 - Color 1
-    [0.23,  0.70,  0.29],    // 1 - Color 2
-    [1.00,  1.00,  0.09],    // 2 - Color 3
-    [0.00,  0.50,  0.78],    // 3 - Color 4
-    [0.96,  0.50,  0.18],    // 4 - Color 5
-    [0.56,  0.11,  0.70],    // 5 - Color 6
-    [0.27,  0.94,  0.94],    // 6 - Color 7
-    [0.94,  0.19,  0.90],    // 7 - Color 8
-    [0.66,  0.43,  0.15],    // 8 - Color 9
-    [1.00,  0.98,  0.78],    // 9 - Color 10
-    [0.50,  0.00,  0.00],    // 10- Color 11
-    [0.00,  0.00,  0.50],    // 11- Color 12
-    [0.00,  0.00,  0.50],    // 12
-    [0.96,  0.50,  0.18],    // 13
-    [0.94,  0.19,  0.90],    // 14
-    [0.00,  0.50,  0.78],    // 15
-    [0.66,  0.43,  0.15],    // 16
-    [1.00,  1.00,  0.09],    // 17
-    [1.00,  0.98,  0.78],    // 18
-    [0.23,  0.70,  0.29],    // 19
-    [0.50,  0.00,  0.00],    // 20
-    [0.56,  0.11,  0.70],    // 21
-  ];
-
-  // Convert the array of colors into a table for all the vertices.
-
-  var colors = [];
-
-  for (var j = 0; j < colorsIco.length; ++j) {
-    const c = colorsIco[j];
-
-    // Repeat each color four times for the four vertices of the face
-    colors = colors.concat(c);
-  }
-
-
-  if (!initArrayBuffer(gl, 'a_Position', new Float32Array(vertices), 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Color', new Float32Array(colors), 3, gl.FLOAT)) return -1;
-  //if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
-
-  gl.disableVertexAttribArray(4);
-  gl.disableVertexAttribArray(2);
-
-  const indicesIco = [
-    //Top Fan
-    0, 1, 2, 3, 4, 5, 1,
-    //Bottom Fan
-    6, 7, 8, 9, 10, 11, 7,
-    //Middle Strip
-    12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 12, 13
-  ]
-
-  // Now send the element array to GL
-
-  var indexBuffer = gl.createBuffer();
-  if (!indexBuffer) {
-    console.log('Failed to create the buffer object');
-    return false;
-  }
- 
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indicesIco), gl.STATIC_DRAW);
-
-  //console.log(indicesIco)
-  indicesIco.length
-}
-
-function initIcosahedronBuffers(gl) {
-  var phi = (1 + Math.sqrt(5)) / 2;
-  var a = 1;
-  var b = 1 / phi;
-
-  var vertices = [
-     0,  b, -a,  -b,  a,  0,   b,  a,  0,
-    -b,  a,  0,   0,  b,  a,   b,  a,  0,
-     0, -b,  a,   0,  b,  a,  -a,  0,  b,
-     a,  0,  b,   0,  b,  a,   0, -b,  a,
-     0, -b, -a,   0,  b, -a,   a,  0, -b,
-    -a,  0, -b,   0,  b, -a,   0, -b, -a,
-     b, -a,  0,   0, -b,  a,  -b, -a,  0,
-    -b, -a,  0,   0, -b, -a,   b, -a,  0,
-    -a,  0,  b,  -b,  a,  0,  -a,  0, -b,
-    -a,  0, -b,  -b, -a,  0,  -a,  0,  b,
-     a,  0, -b,   b,  a,  0,   a,  0,  b,
-     a,  0,  b,   b, -a,  0,   a,  0, -b,
-    -a,  0,  b,   0,  b,  a,  -b,  a,  0,
-     b,  a,  0,   0,  b,  a,   a,  0,  b,
-    -b,  a,  0,   0,  b, -a,  -a,  0, -b,
-     a,  0, -b,   0,  b, -a,   b,  a,  0,
-    -a,  0, -b,   0, -b, -a,  -b, -a,  0,
-     b, -a,  0,   0, -b, -a,   a,  0, -b,
-    -b, -a,  0,   0, -b,  a,  -a,  0,  b,
-     a,  0,  b,   0, -b,  a,   b, -a,  0
-  ];
-
-  function sub (a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; };
-  function cross (a, b) {
-    return [
-      a[1] * b[2] - a[2] * b[1],
-      a[2] * b[0] - a[0] * b[2],
-      a[0] * b[1] - a[1] * b[0]
-    ];
-  };
-  function normalize (a) {
-    var length = a[0] * a[0] + a[1] * a[1] + a[2] * a[2];
-    return [a[0] / length, a[1] / length, a[2] / length];
-  };
-
-  var normals = [];
-  for (var i = 0; i < vertices.length; i += 9) {
-    var a = [vertices[i    ], vertices[i + 1], vertices[i + 2]];
-    var b = [vertices[i + 3], vertices[i + 4], vertices[i + 5]];
-    var c = [vertices[i + 6], vertices[i + 7], vertices[i + 8]];
-    // Normalizing is probably not necessary.
-    // It should also be seperated out.
-    var normal = normalize(cross(sub(a, b), sub(a, c)));
-    normals = normals.concat(normal, normal, normal);
-  }
-
-
-  var colors = new Float32Array([    // Colors
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v1-v2-v3 front
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v3-v4-v5 right
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v0-v5-v6-v1 up
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v1-v6-v7-v2 left
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,    // v7-v4-v3-v2 down
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
-    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,　  // v4-v7-v6-v5 back
- ]);
-
-  console.log(colors);
-
-  var indices = new Uint8Array(vertices.length / 3);
-
-  for (var i = 0; i < indices.length; ++i) indices[i] = i;
-
-  //console.log(vertices.length)
- //console.log(normals.length)
-
-  console.log(vertices)
-  console.log(indices)
-  console.log(normals)
- 
-  // Write the vertex property to buffers (coordinates, colors and normals)
-  if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
-  //gl.disableVertexAttribArray('a_TexCoords');
-  //gl.disableVertexAttribArray(1);
-  gl.disableVertexAttribArray(0);
-  gl.disableVertexAttribArray(3);
-  gl.disableVertexAttribArray(2);
-
-
-  // Write the indices to the buffer object
-  var indexBuffer = gl.createBuffer();
-  if (!indexBuffer) {
-    console.log('Failed to create the buffer object');
-    return false;
-  }
- 
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
- 
-  console.log(indices.length)
-
-  return indices.length;
-};
-
 var g_matrixStack = []; // Array for storing a matrix
 function pushMatrix(m) { // Store the specified matrix to the array
   var m2 = new Matrix4(m);
@@ -1458,7 +956,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
       modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
 
-      var n = greyCube(gl);
+      var n = blackCube(gl, "black");
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
@@ -1478,7 +976,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       gl.uniform1i(u_UseTextures, false);
 
       //console.log("Inside onload");
-      var n = greenCube(gl);
+      var n = blackCube(gl, "green");
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
@@ -1787,7 +1285,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       modelMatrix = popMatrix();
 
           //CREATING THE BENCH
-      var n = brownCube(gl);
+      var n = blackCube(gl, "brown");
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
@@ -1861,7 +1359,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
         //CREATE THE BUILDING */
         // CREATING ALL THE WALLS
-      var n = greyCube(gl);
+      var n = blackCube(gl, "grey");
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
@@ -2252,7 +1750,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
   gl.uniform1i(u_UseTextures, false);
 
   //CREATING THE BENCH
-  var n = brownCube(gl);
+  var n = blackCube(gl, "brown");
   if (n < 0) {
     console.log('Failed to set the vertex information');
     return;
@@ -2321,21 +1819,9 @@ function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler
 		gl.UNSIGNED_BYTE,
 		texture.image
 	);
-	//gl.bindTexture(gl.TEXTURE_2D, null);
 
-  // Set the texture image
-  //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
-  //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-  //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  // Assign u_Sampler to TEXTURE0
   gl.uniform1i(u_Sampler, 0);
 
-  // Enable texture mapping
-  //gl.uniform1i(u_UseTextures, bool);
-
-  // Draw the textured cube
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
 
