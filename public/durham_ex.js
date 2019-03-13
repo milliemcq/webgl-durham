@@ -1304,7 +1304,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-          //CREATING THE BENCH
+      //CREATING THE BENCH
       var n = blackCube(gl, "brown");
       if (n < 0) {
         console.log('Failed to set the vertex information');
@@ -1312,6 +1312,8 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
       }
 
       gl.uniform1i(useTextures, true);
+
+      
 
       pushMatrix(modelMatrix);
         modelMatrix.translate(2, -1.7, 3);
@@ -1324,6 +1326,19 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         modelMatrix.translate(2, -1.5, 3.2);
         modelMatrix.rotate(180,1,0,0);
         modelMatrix.scale(1, 0.2, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      /*
+      modelMatrix.translate(2, -1.55, -2.2);
+        modelMatrix.rotate(45,0,0,1);
+        modelMatrix.rotate(90,0,1,0);
+        modelMatrix.scale(0.7, 0.5, 0.05); */
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(0, 1, 0);
+        //modelMatrix.rotate(180,1,0,0);
+        modelMatrix.scale(1, 1, 1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1794,32 +1809,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
 
 
       }
-
-  gl.uniform1i(useTextures, false);
-
-  //CREATING THE BENCH
-  var n = blackCube(gl, "brown");
-  if (n < 0) {
-    console.log('Failed to set the vertex information');
-    return;
-  }
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.7, 3);
-    modelMatrix.rotate(90,1,0,0);
-    modelMatrix.scale(1, 0.2, 0.05); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-  pushMatrix(modelMatrix);
-    modelMatrix.translate(2, -1.5, 3.2);
-    modelMatrix.rotate(180,1,0,0);
-    modelMatrix.scale(1, 0.2, 0.05); // Scale
-    drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-  modelMatrix = popMatrix();
-
-
-
 
   gl.uniform1i(useTextures, true);
   
