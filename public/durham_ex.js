@@ -193,6 +193,14 @@ var main = function (treeModel) {
         loadTexture(gl, woodTexture, gl.TEXTURE5);
     };
 
+    var leavesTexture = gl.createTexture();
+    leavesTexture.image = new Image();
+    leavesTexture.image.src = './textures/wood.png';
+    leavesTexture.image.onload = function () {
+        console.log("Grass texture loaded")
+        loadTexture(gl, leavesTexture, gl.TEXTURE6);
+    };
+
     
 
     var signTexture = gl.createTexture();
@@ -1361,6 +1369,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         gl.activeTexture(gl.TEXTURE4);
         gl.uniform1i(u_Sampler, 4);
         gl.uniform1i(useTextures, true);// Scale
+        gl.uniform1i(useTextures, false);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
         
       modelMatrix = popMatrix();
