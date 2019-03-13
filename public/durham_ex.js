@@ -1884,6 +1884,3 @@ function animateRotate(angle) {
 }
 
 
-
-
-
