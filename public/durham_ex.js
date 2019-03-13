@@ -177,12 +177,20 @@ var main = function (treeModel) {
         loadTexture(gl, brickTexture, gl.TEXTURE3);
     };
 
-    var brickTexture = gl.createTexture();
-    brickTexture.image = new Image();
-    brickTexture.image.src = './textures/stone.jpg';
-    brickTexture.image.onload = function () {
+    var stoneTexture = gl.createTexture();
+    stoneTexture.image = new Image();
+    stoneTexture.image.src = './textures/stone.jpg';
+    stoneTexture.image.onload = function () {
         console.log("Grass texture loaded")
-        loadTexture(gl, brickTexture, gl.TEXTURE3);
+        loadTexture(gl, stoneTexture, gl.TEXTURE4);
+    };
+
+    var woodTexture = gl.createTexture();
+    woodTexture.image = new Image();
+    woodTexture.image.src = './textures/wood.png';
+    woodTexture.image.onload = function () {
+        console.log("Grass texture loaded")
+        loadTexture(gl, woodTexture, gl.TEXTURE5);
     };
 
     
@@ -1249,7 +1257,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
       
   
     
-      //gl.uniform1i(u_UseTextures, false);
+      gl.uniform1i(useTextures, false);
     
       // CREATE THE SIGN STAND
       var n = signStand(gl, false);
@@ -1261,6 +1269,9 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
       pushMatrix(modelMatrix);
         modelMatrix.translate(2, -1.7, -2);
         modelMatrix.scale(0.1, 0.2, 0.1); // Scale
+        gl.activeTexture(gl.TEXTURE5);
+        gl.uniform1i(u_Sampler, 5);
+        gl.uniform1i(useTextures, true);// Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
     
@@ -1269,6 +1280,8 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         modelMatrix.scale(0.1, 0.2, 0.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
+
+      gl.uniform1i(useTextures, false);
 
       var n = signStand(gl, true);
       if (n < 0) {
@@ -1298,6 +1311,8 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         return;
       }
 
+      gl.uniform1i(useTextures, true);
+
       pushMatrix(modelMatrix);
         modelMatrix.translate(2, -1.7, 3);
         modelMatrix.rotate(90,1,0,0);
@@ -1312,20 +1327,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-      
-      /*var n = initIcosahedronBuffers(gl);
-      if (n < 0) {
-        console.log('Failed to set the vertex information');
-        return;
-      }
-
-      console.log(n);
-
-      pushMatrix(modelMatrix);
-        modelMatrix.translate(0, 0, 0);
-        modelMatrix.scale(1, 1, 1); // Scale
-        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-      modelMatrix = popMatrix();*/
+      gl.uniform1i(useTextures, false);
 
       
       //CREATE THE CYLINDER
@@ -1340,7 +1342,11 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         
         modelMatrix.rotate(90,1,0,0);
         modelMatrix.scale(0.13, 0.13, 1.1); // Scale
+        gl.activeTexture(gl.TEXTURE4);
+        gl.uniform1i(u_Sampler, 4);
+        gl.uniform1i(useTextures, true);// Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+        
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
@@ -1363,6 +1369,8 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         modelMatrix.scale(0.13, 0.13, 1.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
+
+      gl.uniform1i(useTextures, false);
 
         //CREATE THE BUILDING */
         // CREATING ALL THE WALLS
@@ -1495,12 +1503,19 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         modelMatrix.scale(0.5, 0.7, 0.08); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
-
+      
+      gl.uniform1i(useTextures, false);
       //top of cylinders
       pushMatrix(modelMatrix);
         modelMatrix.translate(-3.4, 0.06, -0.4);
         modelMatrix.scale(0.3, 0.08, 0.3); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+        gl.activeTexture(gl.TEXTURE4);
+        gl.uniform1i(u_Sampler, 4);
+        gl.uniform1i(useTextures, true);// Scale
+        gl.uniform1i(useTextures, false);
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+        //gl.uniform1i(useTextures, false);
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
@@ -1521,11 +1536,15 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
+      gl.uniform1i(useTextures, false);
+
       pushMatrix(modelMatrix);
         modelMatrix.translate(-2.5, 0.14, -0.05);
         modelMatrix.scale(2, 0.08, 0.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
+
+      
 
       pushMatrix(modelMatrix);
       modelMatrix.translate(-3.09, 0.47, -0.05);
@@ -1541,6 +1560,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
+      gl.uniform1i(useTextures, true);
 
       // CREATING THE ROOF
       var n = buildingRoofBuffers(gl, true);
