@@ -195,10 +195,18 @@ var main = function (treeModel) {
 
     var leavesTexture = gl.createTexture();
     leavesTexture.image = new Image();
-    leavesTexture.image.src = './textures/wood.png';
+    leavesTexture.image.src = './textures/leaves.jpg';
     leavesTexture.image.onload = function () {
         console.log("Grass texture loaded")
         loadTexture(gl, leavesTexture, gl.TEXTURE6);
+    };
+
+    var waterTexture = gl.createTexture();
+    waterTexture.image = new Image();
+    waterTexture.image.src = './textures/water.jpg';
+    waterTexture.image.onload = function () {
+        console.log("Grass texture loaded")
+        loadTexture(gl, waterTexture, gl.TEXTURE7);
     };
 
     
@@ -1012,6 +1020,16 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
 
       gl.uniform1i(useTextures, false);
 
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(5, -2, 0);
+        modelMatrix.scale(2, 0.1, 8); 
+        gl.activeTexture(gl.TEXTURE7);
+        gl.uniform1i(u_Sampler, 7);
+        gl.uniform1i(useTextures, true);// Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+        gl.uniform1i(useTextures, false);
+      modelMatrix = popMatrix();
+
       //GRASS CLUSTER STARTS HERE
       pushMatrix(modelMatrix);
         modelMatrix.translate(-0.15, -1.9, 0.3);
@@ -1105,12 +1123,17 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
+      gl.uniform1i(useTextures, false);// Scale
+
 
       //TREE LEAVES
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, 1, 0);
         modelMatrix.scale(0.5, 0.5, 0.5); 
-        modelMatrix.rotate(-20+currentAngle,0,1,0);
+        //modelMatrix.rotate(-20+currentAngle,0,1,0);
+        gl.activeTexture(gl.TEXTURE6);
+        gl.uniform1i(u_Sampler, 6);
+        gl.uniform1i(useTextures, true);// Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
 
@@ -1118,14 +1141,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         modelMatrix.translate(0.8, 0.35, 0);
         modelMatrix.scale(0.8, 0.8, 0.8); 
         modelMatrix.rotate(20,0,1,0);
-        modelMatrix.rotate(45+currentAngle,0,0,1);
+        //modelMatrix.rotate(45+currentAngle,0,0,1);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
 
       pushMatrix(modelMatrix);
         modelMatrix.translate(0.3, 0.9, 0.4);
         modelMatrix.scale(0.6, 0.6, 0.6); 
-        modelMatrix.rotate(20 + currentAngle,0,1,0);
+        //modelMatrix.rotate(20 + currentAngle,0,1,0);
         //modelMatrix.rotate(45,0,0,1);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
@@ -1133,7 +1156,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, 0.7, 0.4);
         modelMatrix.scale(0.6, 0.6, 0.6); 
-        modelMatrix.rotate(20 + currentAngle,0,1,0);
+        //modelMatrix.rotate(20 + currentAngle,0,1,0);
         //modelMatrix.rotate(45,0,0,1);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
@@ -1156,7 +1179,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
 
-
+      gl.uniform1i(useTextures, false);// Scale
       
 
       //GRASS
