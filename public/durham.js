@@ -82,6 +82,7 @@ var g_normalMatrix = new Matrix4();  // Coordinate transformation matrix for nor
 var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
 var WING_STEP = 10;
 var ZOOM_STEP = 0.5
+var bird_down = false; 
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
 var zoom = 15;
@@ -1660,6 +1661,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
+      if(currentTranslation > 3)
+      {
+        bird_down = true;
+      }
+      else if(currentTranslation < 0)
+      {
+        bird_down = false;
+      }
       
       //BIRD
       var n = blackCube(gl, "black");
@@ -1827,16 +1836,16 @@ function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler
 
 var g_last = Date.now();
 function animateTranslate(translation) {
-  // Calculate the elapsed time
-  var now = Date.now();
-  var elapsed = now - g_last;
-  g_last = now;
-
-
-  var newTranslation = translation + (1 * elapsed) / 1000;
-  var result = newTranslation %= 3
-
-  return result;
+  var newTranslation;
+  
+  if(bird_down)
+  {
+    newTranslation = translation - 0.05
+  }
+  else{
+    newTranslation = translation + 0.05
+  }
+  return newTranslation;
 }
 
 function animateRotate(angle) {
