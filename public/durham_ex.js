@@ -150,9 +150,6 @@ var main = function (treeModel) {
   // Calculate the view matrix and the projection matrix
   viewMatrix.setLookAt(0, 0, zoom, 0, 0, -100, 0, 1, 0);
 
-  //viewMatrix.setLookAt(0, 0, 50, 0, 0, -100, 0, 1, 0);
-  //zoom = zoom + 100;
-
   var currentTranslation = 0.0;
   var currentAngle = 0.0;
   
@@ -161,34 +158,58 @@ var main = function (treeModel) {
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
   gl.uniformMatrix4fv(u_ProjMatrix, false, projMatrix.elements);
 
-  //viewMatrix.setLookAt(0, 0, 50, 0, 0, -100, 0, 1, 0);
-  //gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
-  //console.log(u_ViewMatrix);
+    useTextures = gl.getUniformLocation(gl.program, "u_UseTextures");
+    u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
 
-  var u_UseTextures = gl.getUniformLocation(gl.program, "u_UseTextures");
-  if (!u_UseTextures) { 
-    console.log('Failed to get the storage location for texture map enable flag');
-    return;
+    var grassTexture = gl.createTexture();
+    grassTexture.image = new Image();
+    grassTexture.image.src = './textures/grass.jpg';
+    grassTexture.image.onload = function () {
+        console.log("Grass texture loaded")
+        loadTexture(gl, grassTexture, gl.TEXTURE1);
+    };
+
+    var brickTexture = gl.createTexture();
+    brickTexture.image = new Image();
+    brickTexture.image.src = './textures/brick.jpg';
+    brickTexture.image.onload = function () {
+        console.log("Grass texture loaded")
+        loadTexture(gl, brickTexture, gl.TEXTURE3);
+    };
+
+    var brickTexture = gl.createTexture();
+    brickTexture.image = new Image();
+    brickTexture.image.src = './textures/stone.jpg';
+    brickTexture.image.onload = function () {
+        console.log("Grass texture loaded")
+        loadTexture(gl, brickTexture, gl.TEXTURE3);
+    };
+
+    
+
+    var signTexture = gl.createTexture();
+    signTexture.image = new Image();
+    signTexture.image.src = './textures/signTexture.png';
+    signTexture.image.onload = function () {
+        loadTexture(gl, signTexture, gl.TEXTURE2);
+        var tick = function() {
+          currentTranslation = animateTranslate(currentTranslation);  // Update the rotation angle
+          currentAngle = animateRotate(currentAngle);  // Update the rotation angle
+          //console.log(u_ViewMatrix);
+          document.onkeydown = function(ev){
+            keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, u_LightColor, 0, u_ViewMatrix);
+          };
+          drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, treeModel, currentTranslation, currentAngle);
+          requestAnimationFrame(tick, canvas); // Request that the browser calls tick
+        };
+        tick();
+    };
+
+  
+
   }
 
-  var tick = function() {
-    currentTranslation = animateTranslate(currentTranslation);  // Update the rotation angle
-    currentAngle = animateRotate(currentAngle);  // Update the rotation angle
-    //console.log(currentAngle);
-    drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel, currentTranslation, currentAngle);
-    requestAnimationFrame(tick, canvas); // Request that the browser calls tick
-  };
-  tick();
-
-  //console.log(u_ViewMatrix);
-  document.onkeydown = function(ev){
-    keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, u_LightColor, 0, u_ViewMatrix);
-  };
-
-  drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, treeModel);
-}
-
-function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, u_LightColor, treeModel, u_ViewMatrix) {
+function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, u_LightColor, treeModel, u_ViewMatrix) {
   //console.log(u_ViewMatrix);
   switch (ev.keyCode) {
     case 40: // Up arrow key -> the positive rotation of arm1 around the y-axis
@@ -923,37 +944,12 @@ function popMatrix() { // Retrieve the matrix from the array
 }
 
 
-function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_UseTextures, model, currentTranslation, currentAngle) {
- //console.log(currentTranslation);
- var GrassTexture = gl.createTexture()
-  if(!GrassTexture)
-  {
-    console.log('Failed to create the texture object');
-    return false;
-  }
-
-  var u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
-   if (!u_Sampler) {
-     console.log('Failed to get the storage location of u_Sampler');
-     return false;
-   }
-
-  GrassTexture.image = new Image();
-  if(!GrassTexture.image)
-  {
-    console.log('Failed to create the image object');
-    return false;
-  }
-
-  //console.log(GrassTexture);
-  
-  GrassTexture.image.onload = function() {
-
+function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, model, currentTranslation, currentAngle) {
       // Clear color and depth buffer
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
       gl.uniform1i(u_isLighting, true); // Will not apply lighting
-      gl.uniform1i(u_UseTextures, true);
+      gl.uniform1i(useTextures, false);
 
       modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
       modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
@@ -964,19 +960,22 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         console.log('Failed to set the vertex information');
         return;
       }
-      gl.uniform1i(u_UseTextures, true);
+      gl.uniform1i(useTextures, true);
 
       //This is the sign
       pushMatrix(modelMatrix);
         modelMatrix.translate(2, -1.55, -2.2);
         modelMatrix.rotate(45,0,0,1);
         modelMatrix.rotate(90,0,1,0);
-        modelMatrix.scale(0.7, 0.5, 0.05); // Scale
-        //drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-        loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
+        modelMatrix.scale(0.7, 0.5, 0.05); 
+        gl.activeTexture(gl.TEXTURE2);
+        gl.uniform1i(u_Sampler, 2);
+        gl.uniform1i(useTextures, true);// Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
       modelMatrix = popMatrix();
 
-      gl.uniform1i(u_UseTextures, false);
+      gl.uniform1i(useTextures, false);
 
       //console.log("Inside onload");
       var n = blackCube(gl, "green");
@@ -988,9 +987,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, -2, 0);
         modelMatrix.scale(8, 0.1, 8); 
-        
+        gl.activeTexture(gl.TEXTURE1);
+        gl.uniform1i(u_Sampler, 1);
+        gl.uniform1i(useTextures, true);// Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+        gl.uniform1i(useTextures, false);
       modelMatrix = popMatrix();
+
+      gl.uniform1i(useTextures, false);
 
       //GRASS CLUSTER STARTS HERE
       pushMatrix(modelMatrix);
@@ -1371,6 +1375,9 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
       pushMatrix(modelMatrix);
         modelMatrix.translate(-3, -1.5, -3.95);
         modelMatrix.scale(2, 1, 0.1); // Scale
+        gl.activeTexture(gl.TEXTURE3);
+        gl.uniform1i(u_Sampler, 3);
+        gl.uniform1i(useTextures, true);// Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1552,7 +1559,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-
+      gl.uniform1i(useTextures, false);// Scale
 
       
 
@@ -1768,13 +1775,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
       }
 
-
-
-  }
-
-  GrassTexture.image.src = '/textures/signTexture.png';
-
-  gl.uniform1i(u_UseTextures, false);
+  gl.uniform1i(useTextures, false);
 
   //CREATING THE BENCH
   var n = blackCube(gl, "brown");
@@ -1800,14 +1801,14 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, u_Use
 
 
 
-  gl.uniform1i(u_UseTextures, true);
+  gl.uniform1i(useTextures, true);
   
   
 }
 
 
 function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
-  pushMatrix(modelMatrix);
+    pushMatrix(modelMatrix);
 
     // Pass the model matrix to the uniform variable
     gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
@@ -1816,18 +1817,17 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
     g_normalMatrix.setInverseOf(modelMatrix);
     g_normalMatrix.transpose();
     gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
-    //gl.disableVertexAttribArray(2);
-    
+
     // Draw the cube
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
-  modelMatrix = popMatrix();
+    modelMatrix = popMatrix();
 }
 
 
 
 
-function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler, u_UseTextures, bool) {
+function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler, useTextures, bool) {
   drawbox(gl, u_ModelMatrix, u_NormalMatrix, n)
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
 
@@ -1881,6 +1881,28 @@ function animateRotate(angle) {
   //console.log(newAngle);
 
   return newAngle %= 60;
+}
+
+function loadTexture(gl, texture, textureIndex) {
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);  // Flip the image's y axis
+  // Activate texture unit
+  gl.activeTexture(textureIndex);
+  // Bind the texture object to the target object
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture parameter
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texImage2D(
+		gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
+		gl.UNSIGNED_BYTE,
+		texture.image
+	);
+
+  // Set the image to texture
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
 }
 
 
