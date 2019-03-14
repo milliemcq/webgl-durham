@@ -1,5 +1,3 @@
-// Directional lighting demo: By Frederick Li
-// Vertex shader program
 var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' +
   'attribute vec4 a_Color;\n' +
@@ -37,7 +35,7 @@ var VSHADER_SOURCE =
 
   '}\n';
 
-// Fragment shader program
+// Fragment shader 
 var FSHADER_SOURCE =
   '#ifdef GL_ES\n' +
   'precision mediump float;\n' +
@@ -59,45 +57,24 @@ var FSHADER_SOURCE =
   '}\n';
 
 
-
-  var InitDemo = function () {
-            loadJSONResource('/models/sphere.json', function (modelErr, treeModel) {
-              if (modelErr) {
-                alert('Fatal error getting tree model (see console)');
-                console.error(modelErr);
-                    //main(treeModel);
-                    //console.log(treeModel);
-                  }
-                  else{
-                    main(treeModel);
-                  }
-                });
-              };
-
 var modelMatrix = new Matrix4(); // The model matrix
 var viewMatrix = new Matrix4();  // The view matrix
 var projMatrix = new Matrix4();  // The projection matrix
 var g_normalMatrix = new Matrix4();  // Coordinate transformation matrix for normals
 
-var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
+var ANGLE_STEP = 3.0;  
 var WING_STEP = 10;
 var ZOOM_STEP = 0.5
 var bird_down = false; 
 var log_down = false;
 var fireflies = false; 
-var g_xAngle = 0.0;    // The rotation x angle (degrees)
-var g_yAngle = 0.0;    // The rotation y angle (degrees)
+var g_xAngle = 0.0;    
+var g_yAngle = 0.0;   
 var zoom = 20;
 
-var main = function (treeModel) {
-
-  //console.log(treeModel);
-
-  // Retrieve <canvas> element
+var main = function () {
   var canvas = document.getElementById('webgl');
-  //console.log(buildingModel);
-  
-  // Get the rendering context for WebGL
+
   var gl = getWebGLContext(canvas);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
@@ -110,16 +87,12 @@ var main = function (treeModel) {
     return;
   }
 
-  // Set clear color and enable hidden surface removal
   gl.clearColor( 0.74902, 0.847059, 0.9, 1.0);
   gl.enable(gl.DEPTH_TEST);
 
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-   
-  
-  
   // Get the storage locations of uniform attributes
   var u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
   var u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
@@ -138,17 +111,11 @@ var main = function (treeModel) {
     return;
   }
 
-  // Set the light color (white)
   gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
-  // Set the light direction (in the world coordinate)
   var lightDirection = new Vector3([0.5, 3.0, 4.0]);
   lightDirection.normalize();     // Normalize
   gl.uniform3fv(u_LightDirection, lightDirection.elements);
 
-  //console.log(canvas.width)
-  //console.log(canvas.height)
-
-  // Calculate the view matrix and the projection matrix
   viewMatrix.setLookAt(0, 0, zoom, 0, 0, -100, 0, 1, 0);
 
   var currentTranslation = 0.0;
@@ -158,7 +125,6 @@ var main = function (treeModel) {
   var fireflyCurrent = 0.0;
 
   projMatrix.setPerspective(30, 800/800, 1, 100);
-  // Pass the model, view, and projection matrix to the uniform variable respectively
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
   gl.uniformMatrix4fv(u_ProjMatrix, false, projMatrix.elements);
 
@@ -221,7 +187,6 @@ var main = function (treeModel) {
         loadTexture(gl, fireflyTexture, gl.TEXTURE8);
     };
 
-    
 
     var signTexture = gl.createTexture();
     signTexture.image = new Image();
@@ -229,16 +194,15 @@ var main = function (treeModel) {
     signTexture.image.onload = function () {
         loadTexture(gl, signTexture, gl.TEXTURE2);
         var tick = function() {
-          currentTranslation = animateTranslate(currentTranslation);  // Update the rotation angle
-          currentAngle = animateRotate(currentAngle);  // Update the rotation angle
+          currentTranslation = animateTranslate(currentTranslation);  
+          currentAngle = animateRotate(currentAngle);  
           currentTranslationLogZ = animateTranslateLog(currentTranslationLogZ);
           currentTranslationLogY = animateTranslateLogY(currentTranslationLogY);
           fireflyCurrent = fireflyTranslate(fireflyCurrent);
-          //console.log(u_ViewMatrix);
           document.onkeydown = function(ev){
             keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, u_LightColor, 0, u_ViewMatrix);
           };
-          drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, treeModel, currentTranslation, currentAngle, currentTranslationLogZ, currentTranslationLogY, fireflyCurrent);
+          drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures,  currentTranslation, currentAngle, currentTranslationLogZ, currentTranslationLogY, fireflyCurrent);
           requestAnimationFrame(tick, canvas); // Request that the browser calls tick
         };
         tick();
@@ -248,7 +212,7 @@ var main = function (treeModel) {
 
   }
 
-function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, u_LightColor, treeModel, u_ViewMatrix) {
+function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, u_LightColor, u_ViewMatrix) {
   //console.log(u_ViewMatrix);
   switch (ev.keyCode) {
     case 40: // Up arrow key -> the positive rotation of arm1 around the y-axis
@@ -981,7 +945,6 @@ function initGrassBuffers(gl) {
   return indices.length;
 }
 
-
 var g_matrixStack = []; // Array for storing a matrix
 function pushMatrix(m) { // Store the specified matrix to the array
   var m2 = new Matrix4(m);
@@ -993,16 +956,15 @@ function popMatrix() { // Retrieve the matrix from the array
 }
 
 
-function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, model, currentTranslation, currentAngle, currentTranslationLogZ, currentTranslationLogY, fireflyCurrent) {
-      // Clear color and depth buffer
+function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, currentTranslation, currentAngle, currentTranslationLogZ, currentTranslationLogY, fireflyCurrent) {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-      gl.uniform1i(u_isLighting, true); // Will not apply lighting
+      gl.uniform1i(u_isLighting, true); 
       gl.uniform1i(useTextures, false);
 
-      modelMatrix.setTranslate(-1, -0.5, 0);  // Translation (No translation is supported here)
-      modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
-      modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+      modelMatrix.setTranslate(-1, -0.5, 0);  
+      modelMatrix.rotate(g_yAngle, 0, 1, 0); 
+      modelMatrix.rotate(g_xAngle, 1, 0, 0); 
 
       var n = blackCube(gl, "black");
       if (n < 0) {
@@ -1021,7 +983,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         gl.uniform1i(u_Sampler, 2);
         gl.uniform1i(useTextures, true);// Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
-        //loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, GrassTexture, u_Sampler, u_UseTextures, true)
       modelMatrix = popMatrix();
 
       gl.uniform1i(useTextures, false);
@@ -1150,12 +1111,10 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
 
       gl.uniform1i(useTextures, false);// Scale
 
-
       //TREE LEAVES
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, 1, 0);
         modelMatrix.scale(0.5, 0.5, 0.5); 
-        //modelMatrix.rotate(-20+currentAngle,0,1,0);
         gl.activeTexture(gl.TEXTURE6);
         gl.uniform1i(u_Sampler, 6);
         gl.uniform1i(useTextures, true);// Scale
@@ -1166,23 +1125,18 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         modelMatrix.translate(0.8, 0.35, 0);
         modelMatrix.scale(0.8, 0.8, 0.8); 
         modelMatrix.rotate(20,0,1,0);
-        //modelMatrix.rotate(45+currentAngle,0,0,1);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
 
       pushMatrix(modelMatrix);
         modelMatrix.translate(0.3, 0.9, 0.4);
         modelMatrix.scale(0.6, 0.6, 0.6); 
-        //modelMatrix.rotate(20 + currentAngle,0,1,0);
-        //modelMatrix.rotate(45,0,0,1);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
 
       pushMatrix(modelMatrix);
         modelMatrix.translate(0, 0.7, 0.4);
         modelMatrix.scale(0.6, 0.6, 0.6); 
-        //modelMatrix.rotate(20 + currentAngle,0,1,0);
-        //modelMatrix.rotate(45,0,0,1);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
 
@@ -1191,7 +1145,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         modelMatrix.scale(0.6, 0.6, 0.6); 
         modelMatrix.rotate(20,0,1,0);
         modelMatrix.rotate(45,1,0,0);
-        //modelMatrix.rotate(45,0,0,1);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
 
@@ -1200,7 +1153,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         modelMatrix.scale(0.6, 0.6, 0.6); 
         modelMatrix.rotate(40,0,1,0);
         modelMatrix.rotate(45,1,0,0);
-        //modelMatrix.rotate(45,0,0,1);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix(); 
 
@@ -1384,12 +1336,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         modelMatrix.scale(1, 0.2, 0.05); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
-
-      /*
-      modelMatrix.translate(2, -1.55, -2.2);
-        modelMatrix.rotate(45,0,0,1);
-        modelMatrix.rotate(90,0,1,0);
-        modelMatrix.scale(0.7, 0.5, 0.05); */
 
       pushMatrix(modelMatrix);
         modelMatrix.translate(1.975, -1.535, -2.2);
@@ -1641,7 +1587,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
       pushMatrix(modelMatrix);
         modelMatrix.translate(-2.5, 0.1, -2.1);
         modelMatrix.rotate(180,1,0,0);
-        //modelMatrix.rotate(-5,1,0,1);
         modelMatrix.rotate(45,0,0,1);
         modelMatrix.rotate(90,0,1,0);
         modelMatrix.scale(4, 1.8, 1.8); // Scale
@@ -1681,10 +1626,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
       modelMatrix = popMatrix();
       increment_x += 0.1;
       }
-
-
-
-      
 
       
       //CREATE THE CYLINDER
@@ -1791,8 +1732,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-      //BANK
-
       if(currentTranslationLogY > 0.05)
       {
         log_down = true;
@@ -1835,11 +1774,9 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
       }
 
       pushMatrix(modelMatrix);
-        
         modelMatrix.translate(-2.5, (-1.46 + currentTranslation), 2.5);
         modelMatrix.rotate(45,0,1,0);
         modelMatrix.scale(0.13, 0.13, 0.15); // Scale
-        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1849,13 +1786,11 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
-      //console.log(currentAngle)
       //WING 1
       pushMatrix(modelMatrix);
-        //modelMatrix.rotate(currentAngle,1,0,0);
         modelMatrix.translate(-2.4, (-1.41 + currentTranslation), 2.5);
         modelMatrix.rotate(20-currentAngle,0,0,1);
-        modelMatrix.scale(0.13, 0.03, 0.1); // Scale
+        modelMatrix.scale(0.13, 0.03, 0.1); 
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1863,8 +1798,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
       pushMatrix(modelMatrix);
         modelMatrix.translate(-2.597, (-1.41 + currentTranslation), 2.5);
         modelMatrix.rotate(-20+currentAngle,0,0,1);
-        modelMatrix.scale(0.13, 0.03, 0.1); // Scale
-        
+        modelMatrix.scale(0.13, 0.03, 0.1); 
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1877,15 +1811,12 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
 
       pushMatrix(modelMatrix);
         modelMatrix.translate(-2.45, (-1.55 + currentTranslation), 2.5);
-        //modelMatrix.rotate(45,0,1,0);
         modelMatrix.scale(0.03, 0.13, 0.1); // Scale
-        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
         modelMatrix.translate(-2.55, (-1.55+currentTranslation), 2.5);
-        //modelMatrix.rotate(45,0,1,0);
         modelMatrix.scale(0.03, 0.13, 0.07); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
@@ -1913,41 +1844,30 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         }
         
         pushMatrix(modelMatrix);
-        
         modelMatrix.translate(1, (-2.5+fireflyCurrent), 1);
-        //modelMatrix.rotate(45,0,1,0);
-        
         modelMatrix.scale(0.1, 0.1, 0.1); // Scale
         gl.activeTexture(gl.TEXTURE8);
         gl.uniform1i(u_Sampler, 8);
         gl.uniform1i(useTextures, true);// Scale
-        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
         modelMatrix = popMatrix();
 
         pushMatrix(modelMatrix);
-       
         modelMatrix.translate(-1,(-2.5+fireflyCurrent), -1);
         modelMatrix.scale(0.1, 0.1, 0.1); // Scale
-        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
         modelMatrix = popMatrix();
 
         pushMatrix(modelMatrix);
-       
         modelMatrix.translate(0.75,(-2.5+fireflyCurrent), -1);
         modelMatrix.scale(0.1, 0.1, 0.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
         modelMatrix = popMatrix();
-
-
       }
 
   gl.uniform1i(useTextures, true);
   
-  
 }
-
 
 function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
     pushMatrix(modelMatrix);
@@ -1966,38 +1886,9 @@ function drawbox(gl, u_ModelMatrix, u_NormalMatrix, n) {
     modelMatrix = popMatrix();
 }
 
-
-
-
-function loadTexAndDraw(gl, u_ModelMatrix, u_NormalMatrix, n, texture, u_Sampler, useTextures, bool) {
-  drawbox(gl, u_ModelMatrix, u_NormalMatrix, n)
-  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
-
-  // Enable texture unit0
-  gl.activeTexture(gl.TEXTURE0);
-
-  // Bind the texture object to the target
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-	gl.texImage2D(
-		gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
-		gl.UNSIGNED_BYTE,
-		texture.image
-	);
-
-  gl.uniform1i(u_Sampler, 0);
-
-  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
-}
-
 var g_last = Date.now();
 function animateTranslate(translation) {
   var newTranslation;
-  
   if(bird_down)
   {
     newTranslation = translation - 0.05
@@ -2010,7 +1901,6 @@ function animateTranslate(translation) {
 
 function animateTranslateLogY(translation) {
   var newTranslation;
-  
   if(log_down)
   {
     newTranslation = translation - 0.01
@@ -2023,13 +1913,11 @@ function animateTranslateLogY(translation) {
 
 function animateTranslateLog(translation) {
   var newTranslation = translation + 0.05;
-  
   return newTranslation %7;
 }
 
 function fireflyTranslate(translation) {
   var newTranslation = translation + 0.1;
-  
   return newTranslation %1;
 }
 
@@ -2043,12 +1931,8 @@ function animateRotate(angle) {
 
 function loadTexture(gl, texture, textureIndex) {
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);  // Flip the image's y axis
-  // Activate texture unit
   gl.activeTexture(textureIndex);
-  // Bind the texture object to the target object
   gl.bindTexture(gl.TEXTURE_2D, texture);
-
-  // Set the texture parameter
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -2058,8 +1942,6 @@ function loadTexture(gl, texture, textureIndex) {
 		gl.UNSIGNED_BYTE,
 		texture.image
 	);
-
-  // Set the image to texture
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, texture.image);
 }
 
