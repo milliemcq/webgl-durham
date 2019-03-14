@@ -350,6 +350,16 @@ function blackCube(gl, color) {
         0.658824, 0.658824, 0.658824,   0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824,  0.658824, 0.658824, 0.658824　    // v4-v7-v6-v5 back
        ]);
       break;
+    case "yellow":
+    var colors = new Float32Array([    // Colors
+      1, 1, 0,  1, 1, 0,  1, 1, 0,  1, 1, 0,  // v0-v1-v2-v3 front 
+      1, 1, 0,  1, 1, 0,  1, 1, 0,  1, 1, 0,     // v0-v3-v4-v5 right
+      1, 1, 0,  1, 1, 0,  1, 1, 0,  1, 1, 0,     // v0-v5-v6-v1 up
+      1, 1, 0,  1, 1, 0,  1, 1, 0,  1, 1, 0,    // v1-v6-v7-v2 left
+      1, 1, 0,  1, 1, 0,  1, 1, 0,  1, 1, 0,   // v7-v4-v3-v2 down
+      1, 1, 0,  1, 1, 0,  1, 1, 0,  1, 1, 0, 　    // v4-v7-v6-v5 back
+     ]);
+      break;
     default:
       var colors = new Float32Array([    // Colors
         0, 0, 0,   0, 0, 0,   0, 0, 0,   0, 0, 0,    // v0-v1-v2-v3 front
@@ -1638,12 +1648,29 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         return;
       }
 
+      var i;
+      var increment_y = 0
+      for (i = 0; i < 5; i++){
       pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.5, -1.7, -0.91);
-        modelMatrix.scale(0.6, 0.1, 0.1); // Scale
+        modelMatrix.translate(-2.5, -1.7 + increment_y, -0.91);
+        modelMatrix.scale(0.6, 0.07, 0.1); // Scale
         gl.uniform1i(useTextures, false);// Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
+      increment_y += 0.3;
+      }
+
+      var j;
+      var increment_x = 0
+      for (i = 0; i < 6; i++){
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.75 + increment_x, -1.1, -0.91);
+        modelMatrix.scale(0.05, 1.3, 0.05); // Scale
+        gl.uniform1i(useTextures, false);// Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+      increment_x += 0.1;
+      }
 
 
 
@@ -1777,7 +1804,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         modelMatrix.rotate(90,0,1,0);
         modelMatrix.rotate(50,1,0,0);
         modelMatrix.scale(0.1, 0.1, 0.1); // Scale
-        
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
@@ -1877,9 +1903,9 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         }
 
         pushMatrix(modelMatrix);
-        modelMatrix.translate(-2.45, (-1.55 + currentTranslation), 2.5);
+        modelMatrix.translate(1,1, 1);
         //modelMatrix.rotate(45,0,1,0);
-        modelMatrix.scale(0.03, 0.13, 0.1); // Scale
+        modelMatrix.scale(1, 1, 1); // Scale
         
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
         modelMatrix = popMatrix();
