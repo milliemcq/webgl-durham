@@ -86,7 +86,7 @@ var bird_down = false;
 var fireflies = false; 
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
-var zoom = 15;
+var zoom = 20;
 
 var main = function (treeModel) {
 
@@ -975,7 +975,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
       gl.uniform1i(u_isLighting, true); // Will not apply lighting
       gl.uniform1i(useTextures, false);
 
-      modelMatrix.setTranslate(0, 0, 0);  // Translation (No translation is supported here)
+      modelMatrix.setTranslate(-1, -0.5, 0);  // Translation (No translation is supported here)
       modelMatrix.rotate(g_yAngle, 0, 1, 0); // Rotate along y axis
       modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
 
@@ -1009,8 +1009,8 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
       }
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(0, -2, 0);
-        modelMatrix.scale(8, 0.1, 8); 
+        modelMatrix.translate(0, -2.3, 0);
+        modelMatrix.scale(8, 0.6, 8); 
         gl.activeTexture(gl.TEXTURE1);
         gl.uniform1i(u_Sampler, 1);
         gl.uniform1i(useTextures, true);// Scale
@@ -1021,7 +1021,7 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
       gl.uniform1i(useTextures, false);
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(5, -2, 0);
+        modelMatrix.translate(5, -2.55, 0);
         modelMatrix.scale(2, 0.1, 8); 
         gl.activeTexture(gl.TEXTURE7);
         gl.uniform1i(u_Sampler, 7);
@@ -1389,10 +1389,6 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         
         modelMatrix.rotate(90,1,0,0);
         modelMatrix.scale(0.13, 0.13, 1.1); // Scale
-        gl.activeTexture(gl.TEXTURE4);
-        gl.uniform1i(u_Sampler, 4);
-        gl.uniform1i(useTextures, true);// Scale
-        gl.uniform1i(useTextures, false);
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
         
       modelMatrix = popMatrix();
@@ -1737,6 +1733,24 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         modelMatrix.scale(0.04, 0.04, 0.05); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
+
+      //BANK
+
+      //BOBBING BRANCH
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(5, -2.45, 3.5);
+        modelMatrix.scale(0.15, 0.15, 0.5); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(1, 1, 1);
+        modelMatrix.rotate(40,0,0,1);
+        modelMatrix.scale(1, 1, 1); // Scale
+        
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
 
       if(currentTranslation > 3)
       {
