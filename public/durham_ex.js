@@ -1630,6 +1630,23 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
 
       gl.uniform1i(useTextures, false);// Scale
 
+
+      //CREATING THE DOOR
+      var n = blackCube(gl, "black");
+      if (n < 0) {
+        console.log('Failed to set the vertex information');
+        return;
+      }
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(-2.5, -1.7, -0.91);
+        modelMatrix.scale(0.6, 0.1, 0.1); // Scale
+        gl.uniform1i(useTextures, false);// Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+
+
       
 
       
