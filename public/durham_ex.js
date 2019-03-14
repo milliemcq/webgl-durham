@@ -83,6 +83,7 @@ var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
 var WING_STEP = 10;
 var ZOOM_STEP = 0.5
 var bird_down = false; 
+var log_down = false;
 var fireflies = false; 
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
@@ -152,6 +153,8 @@ var main = function (treeModel) {
 
   var currentTranslation = 0.0;
   var currentAngle = 0.0;
+  var currentTranslationLogZ = 0.0;
+  var currentTranslationLogY = 0.0;
   
   projMatrix.setPerspective(30, 800/800, 1, 100);
   // Pass the model, view, and projection matrix to the uniform variable respectively
@@ -219,11 +222,13 @@ var main = function (treeModel) {
         var tick = function() {
           currentTranslation = animateTranslate(currentTranslation);  // Update the rotation angle
           currentAngle = animateRotate(currentAngle);  // Update the rotation angle
+          currentTranslationLogZ = animateTranslateLog(currentTranslationLogZ);
+          currentTranslationLogY = animateTranslateLogY(currentTranslationLogY);
           //console.log(u_ViewMatrix);
           document.onkeydown = function(ev){
             keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, u_LightColor, 0, u_ViewMatrix);
           };
-          drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, treeModel, currentTranslation, currentAngle);
+          drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, treeModel, currentTranslation, currentAngle, currentTranslationLogZ, currentTranslationLogY);
           requestAnimationFrame(tick, canvas); // Request that the browser calls tick
         };
         tick();
@@ -968,7 +973,7 @@ function popMatrix() { // Retrieve the matrix from the array
 }
 
 
-function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, model, currentTranslation, currentAngle) {
+function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, model, currentTranslation, currentAngle, currentTranslationLogZ, currentTranslationLogY) {
       // Clear color and depth buffer
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -1736,17 +1741,27 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
 
       //BANK
 
+      if(currentTranslationLogY > 0.05)
+      {
+        log_down = true;
+      }
+      else if(currentTranslationLogY < -0.08)
+      {
+        log_down = false;
+      }
+
       //BOBBING BRANCH
       pushMatrix(modelMatrix);
-        modelMatrix.translate(5, -2.45, 3.5);
+        modelMatrix.translate(5, (-2.45+currentTranslationLogY), (3.48-currentTranslationLogZ));
         modelMatrix.scale(0.15, 0.15, 0.5); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
 
       pushMatrix(modelMatrix);
-        modelMatrix.translate(1, 1, 1);
-        modelMatrix.rotate(40,0,0,1);
-        modelMatrix.scale(1, 1, 1); // Scale
+        modelMatrix.translate(4.87, (-2.36+currentTranslationLogY), (3.2-currentTranslationLogZ));
+        modelMatrix.rotate(90,0,1,0);
+        modelMatrix.rotate(50,1,0,0);
+        modelMatrix.scale(0.1, 0.1, 0.1); // Scale
         
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
       modelMatrix = popMatrix();
@@ -1920,6 +1935,25 @@ function animateTranslate(translation) {
     newTranslation = translation + 0.05
   }
   return newTranslation;
+}
+
+function animateTranslateLogY(translation) {
+  var newTranslation;
+  
+  if(log_down)
+  {
+    newTranslation = translation - 0.01
+  }
+  else{
+    newTranslation = translation + 0.01
+  }
+  return newTranslation;
+}
+
+function animateTranslateLog(translation) {
+  var newTranslation = translation + 0.05;
+  
+  return newTranslation %7;
 }
 
 function animateRotate(angle) {
