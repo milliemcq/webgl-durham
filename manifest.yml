@@ -1,0 +1,11 @@
+applications:
+- buildpack: sdk-for-nodejs
+  command: npm start
+  domain: eu-gb.mybluemix.net
+  host: durham-webgl
+  instances: 1
+  memory: 256M
+  name: webgldurham
+  timeout: 180
+domain: eu-gb.mybluemix.net
+host: durham-webgl

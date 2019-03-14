@@ -200,7 +200,7 @@ var main = function () {
           currentTranslationLogY = animateTranslateLogY(currentTranslationLogY);
           fireflyCurrent = fireflyTranslate(fireflyCurrent);
           document.onkeydown = function(ev){
-            keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, u_LightColor, 0, u_ViewMatrix);
+            keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, u_LightColor, u_ViewMatrix);
           };
           drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures,  currentTranslation, currentAngle, currentTranslationLogZ, currentTranslationLogY, fireflyCurrent);
           requestAnimationFrame(tick, canvas); // Request that the browser calls tick
