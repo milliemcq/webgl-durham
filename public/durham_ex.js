@@ -155,7 +155,8 @@ var main = function (treeModel) {
   var currentAngle = 0.0;
   var currentTranslationLogZ = 0.0;
   var currentTranslationLogY = 0.0;
-  
+  var fireflyCurrent = 0.0;
+
   projMatrix.setPerspective(30, 800/800, 1, 100);
   // Pass the model, view, and projection matrix to the uniform variable respectively
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
@@ -212,6 +213,14 @@ var main = function (treeModel) {
         loadTexture(gl, waterTexture, gl.TEXTURE7);
     };
 
+    var fireflyTexture = gl.createTexture();
+    fireflyTexture.image = new Image();
+    fireflyTexture.image.src = './textures/firefly.jpg';
+    fireflyTexture.image.onload = function () {
+        console.log("Grass texture loaded")
+        loadTexture(gl, fireflyTexture, gl.TEXTURE8);
+    };
+
     
 
     var signTexture = gl.createTexture();
@@ -224,11 +233,12 @@ var main = function (treeModel) {
           currentAngle = animateRotate(currentAngle);  // Update the rotation angle
           currentTranslationLogZ = animateTranslateLog(currentTranslationLogZ);
           currentTranslationLogY = animateTranslateLogY(currentTranslationLogY);
+          fireflyCurrent = fireflyTranslate(fireflyCurrent);
           //console.log(u_ViewMatrix);
           document.onkeydown = function(ev){
             keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, u_LightColor, 0, u_ViewMatrix);
           };
-          drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, treeModel, currentTranslation, currentAngle, currentTranslationLogZ, currentTranslationLogY);
+          drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, treeModel, currentTranslation, currentAngle, currentTranslationLogZ, currentTranslationLogY, fireflyCurrent);
           requestAnimationFrame(tick, canvas); // Request that the browser calls tick
         };
         tick();
@@ -983,7 +993,7 @@ function popMatrix() { // Retrieve the matrix from the array
 }
 
 
-function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, model, currentTranslation, currentAngle, currentTranslationLogZ, currentTranslationLogY) {
+function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTextures, model, currentTranslation, currentAngle, currentTranslationLogZ, currentTranslationLogY, fireflyCurrent) {
       // Clear color and depth buffer
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -1901,12 +1911,32 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
           console.log('Failed to set the vertex information');
           return;
         }
+        
+        pushMatrix(modelMatrix);
+        
+        modelMatrix.translate(1, (-2.5+fireflyCurrent), 1);
+        //modelMatrix.rotate(45,0,1,0);
+        
+        modelMatrix.scale(0.1, 0.1, 0.1); // Scale
+        gl.activeTexture(gl.TEXTURE8);
+        gl.uniform1i(u_Sampler, 8);
+        gl.uniform1i(useTextures, true);// Scale
+        
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+        modelMatrix = popMatrix();
 
         pushMatrix(modelMatrix);
-        modelMatrix.translate(1,1, 1);
-        //modelMatrix.rotate(45,0,1,0);
-        modelMatrix.scale(1, 1, 1); // Scale
+       
+        modelMatrix.translate(-1,(-2.5+fireflyCurrent), -1);
+        modelMatrix.scale(0.1, 0.1, 0.1); // Scale
         
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+        modelMatrix = popMatrix();
+
+        pushMatrix(modelMatrix);
+       
+        modelMatrix.translate(0.75,(-2.5+fireflyCurrent), -1);
+        modelMatrix.scale(0.1, 0.1, 0.1); // Scale
         drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
         modelMatrix = popMatrix();
 
@@ -1997,20 +2027,17 @@ function animateTranslateLog(translation) {
   return newTranslation %7;
 }
 
-function animateRotate(angle) {
+function fireflyTranslate(translation) {
+  var newTranslation = translation + 0.1;
+  
+  return newTranslation %1;
+}
 
-  //console.log(angle);
-  // Calculate the elapsed time
+function animateRotate(angle) {
   var now = Date.now();
   var elapsed = now - g_last;
   g_last = now;
-
-
-  // Update the current rotation angle (adjusted by the elapsed time)
   var newAngle = angle + WING_STEP;
-
-  //console.log(newAngle);
-
   return newAngle %= 60;
 }
 
