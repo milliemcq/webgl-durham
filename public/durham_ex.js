@@ -1766,13 +1766,66 @@ function drawWithTextures(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, useTe
         bird_down = false;
       }
       
-      //BIRD
+      
       var n = blackCube(gl, "black");
       if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
       }
 
+      //BENCH
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(1.7, -1.6, 3.24);
+        modelMatrix.scale(0.05, 0.38, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2.3, -1.6, 3.24);
+        modelMatrix.scale(0.05, 0.38, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(1.7, -1.75, 3.05);
+        modelMatrix.scale(0.05, 0.05, 0.32); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2.3, -1.75, 3.05);
+        modelMatrix.scale(0.05, 0.05, 0.32); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+
+      //LEGS
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(1.7, -1.8, 3.24);
+        modelMatrix.scale(0.05, 0.38, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2.3, -1.8, 3.24);
+        modelMatrix.scale(0.05, 0.38, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(1.7, -1.9, 2.9);
+        modelMatrix.scale(0.05, 0.38, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+      pushMatrix(modelMatrix);
+        modelMatrix.translate(2.3, -1.9, 2.9);
+        modelMatrix.scale(0.05, 0.38, 0.05); // Scale
+        drawbox(gl, u_ModelMatrix, u_NormalMatrix, n);
+      modelMatrix = popMatrix();
+
+
+      //BIRD
       pushMatrix(modelMatrix);
         modelMatrix.translate(-2.5, (-1.46 + currentTranslation), 2.5);
         modelMatrix.rotate(45,0,1,0);
